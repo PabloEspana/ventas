@@ -1,4 +1,4 @@
-io# Sistema de Gestión de Ventas y Atención al Cliente
+# Sistema de Gestión de Ventas y Atención al Cliente
 
 Esta es una aplicación desarrollada con Electron, framework que nos permite desarrollar aplicaciones de escritorio usando tecnologías web.
 Como gestor de base de datos se utiliza MongoDB
@@ -9,4 +9,4 @@ Como gestor de base de datos se utiliza MongoDB
 
 Para iniciar la aplicación basta con ejecutar el comando npm install para la instalación de los módulos que esta requiere.
 
-Podrás iniciarla ejecutando en consola nmp start, al iniciarla por defecto creara un usuario administrador y sus credenciales serán usuario 'admin', contraseña 'admin'
+Podrás iniciarla ejecutando en consola nmp start, al iniciarla por defecto se creará un usuario administrador y sus credenciales serán: usuario 'admin', contraseña 'admin'
