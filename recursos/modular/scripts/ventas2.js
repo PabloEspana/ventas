@@ -14,26 +14,26 @@ IVA = 12;
 totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nuevaCantidad = 0, cantidadFinal = 0,
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
-window.onload = () => {
-	var date = new Date(); 
-	var labelFecha = document.getElementById('fecha');
-	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear();//Obtener día, mes y año
-	labelFecha.innerHTML = "Fecha de la Venta: " + dia + "/" + mes + "/" + anio;//Envio de la fecha al body
+window.onload = () => { // Evento de carga
+	var date = new Date();  // Instancia de Date
+	var labelFecha = document.getElementById('fecha'); // Se obtiene el label de la fecha
+	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear(); // Obtener día, mes y año actual
+	labelFecha.innerHTML = "Fecha de la Venta: " + dia + "/" + mes + "/" + anio; // Envio de la fecha al body
 }
 
-boton = document.getElementById('btn-agregar').addEventListener('click', agregarProducto);//Al presionar agregar items
+boton = document.getElementById('btn-agregar').addEventListener('click', agregarProducto); // Al presionar ejecuta la funcion para agregar items
 datos = { productos: [] }//Creacion de Objeto para guardar los productos de la venta
 enviarContenido = document.getElementById('tablaProductos');//Referencia a la tabla donde se envia el contenido
 
 
 /////////////////////////////////////////Agregar Productos///////////////////////////////////////
 function agregarProducto() {
-	var superaExistencia = false
-	if (productoEncontrado) {//Si existe el producto se procede a validar la existencia
-		if (cantidad.value == "" || cantidad.value == 0) {//Si no se ingresa cantidad por defecto será 1
+	var superaExistencia = false // Variable para controlar la existencia
+	if ( productoEncontrado ) { // Si existe el producto se procede a validar la existencia
+		if (cantidad.value == "" || cantidad.value == 0) { // Si no se ingresa cantidad por defecto será 1
 			cantidad.value = 1
 		}
-		if (controlarExistencia(cantidad.value, existenciaProductoActual)) {//Si cantidad es mayor a existencia
+		if (controlarExistencia(cantidad.value, existenciaProductoActual)) { // Si cantidad es mayor a existencia
 			swal({
 				type: 'error',
 				title: 'Incorrecto',
