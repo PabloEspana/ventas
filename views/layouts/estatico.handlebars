@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Car de lujo</title>
+    <link rel="stylesheet" href="../general/estilos/bootstrap.css">
+    <link rel="stylesheet" href="../general/estilos/bootstrap-theme.css">
+    <link rel="stylesheet" href="../general/estilos/footer.css">
+    <link rel="stylesheet" href="../general/estilos/cargando.css">
+    <link rel="stylesheet" href="../general/estilos/sweetalert2.css">
+    <link rel="stylesheet" href="../general/estilos/material.min.css" />
+    <link rel="stylesheet" href="../general/estilos/design.css" />
+    <link rel="stylesheet" href="../general/estilos/main.css" />
+    <script src="../general/scripts/jquery.js" type="text/javascript"></script>
+    <script>window.jQuery || document.write('<script src="../general/scripts/jquery.js"><\/script>')</script>
+    <script src="../general/scripts/jquery.js" type="text/javascript"></script>
+    <script src="../general/scripts/material.min.js" ></script>
+    <script src="../general/scripts/sweetalert2.min.js" ></script>
+    <script src="../general/scripts/main.js" ></script>
+    <script src="../general/scripts/Ayuda.js" type="text/javascript"></script>
+    <script src="../general/scripts/verPDF.js" type="text/javascript"></script>
+    <script src="../general/scripts/msgModal.js"></script>
+</head>
+
+<body>
+    
+    <div id="contenido">
+        <!-- navBar -->
+        {{#if user}}
+        <div class="full-width navBar" id="NavPrincipal">
+            <div class="full-width navBar-options">
+                <i class="zmdi zmdi-more-vert btn-menu" id="btn-menu" title="Menú"></i>
+                <nav class="navBar-options-list">
+                    <ul class="list-unstyle">
+                        <!--Lo dejamos o no-->
+                        <li class="btn-recargar" id="recar" title="Actualizar">
+                            <i class="zmdi zmdi-refresh-sync"></i>
+                        </li>
+                        <!--fin-->
+                        <!--
+                        <li class="btn-Notificacion" id="notificacion" title="Notificación">
+                            <i class="zmdi zmdi-notifications"></i>
+                        </li>
+                        -->
+                        <li class="btn-Ayuda" id="ayuda" title="Ayuda" onclick="VerPDF()">
+                            <i class="zmdi zmdi-help"></i>
+                        </li>
+                        <li class="btn-exit" id="btn-exit" title="Cerrar sesión">
+                            <i class="zmdi zmdi-power"></i>
+                        </li>
+                        <li class="text-condensedLight noLink"><small>{{user.username}}</small></li>
+                        <li class="noLink">
+                            <figure style="padding-top:12px">
+                                <img src="../general/imagenes/avatar-male.png" alt="Avatar" class="img-responsive">
+                            </figure>
+                        </li>
+                        
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {{/if}}
+        {{#if user}}
+        <section class="full-width navLateral" style="overflow: auto;" id="lateralGeneral"> 
+            <div class="full-width navLateral-body">
+                <div class="full-width navLateral-body-logo text-center tittles">
+                    <i class="zmdi zmdi-close btn-menu"></i>CAR DE LUJO</div>
+                <figure class="full-width" style="height: 77px;">
+                    <div class="navLateral-body-cl">
+                        <img src="../general/imagenes/avatar-male.png" alt="Avatar" class="img-responsive">
+                    </div>
+                    <figcaption class="navLateral-body-cr hide-on-tablet">
+                        <span>
+						{{user.username}}<br>
+						<small>{{user.verificar}}</small>
+					</span>
+                    </figcaption>
+                </figure>
+                <div class="full-width tittles navLateral-body-tittle-menu" id="title_static">
+                    <i class="zmdi zmdi-desktop-mac"></i><span class="hide-on-tablet">&nbsp; INICIO</span>
+                </div>
+                <br>
+                <nav class="full-width">
+                    <ul class="full-width list-unstyle menu-principal">
+                        <li class="full-width">
+                            <a href="/" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-view-dashboard"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">INICIO</div>
+                            </a>
+                        </li>
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="#!" class="full-width btn-subMenu">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-case"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">
+                                    ADMINISTRACIÓN
+                                </div>
+                                <span class="zmdi zmdi-chevron-left"></span>
+                            </a>
+                            <ul class="full-width menu-principal sub-menu-options">
+                                <li class="full-width">
+                                    <a href="/admin/reportes" class="full-width">
+                                        <div class="navLateral-body-cl">
+                                            <i class="zmdi zmdi-label"></i>
+                                        </div>
+                                        <div class="navLateral-body-cr hide-on-tablet">
+                                            REPORTES
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {{/if}}
+
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="#!" class="full-width btn-subMenu">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-face"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">
+                                    USUARIOS</div>
+                                <span class="zmdi zmdi-chevron-left"></span>
+                            </a>
+                            <ul class="full-width menu-principal sub-menu-options">
+                                <li class="full-width">
+                                    <a href="/admin/administracion" class="full-width">
+                                        <div class="navLateral-body-cl">
+                                            <i class="zmdi zmdi-account"></i>
+                                        </div>
+                                        <div class="navLateral-body-cr hide-on-tablet">
+                                            ADMINISTRADORES</div>
+                                    </a>
+                                </li>
+                                <li class="full-width">
+                                    <a href="/admin/cliente" class="full-width">
+                                        <div class="navLateral-body-cl">
+                                            <i class="zmdi zmdi-accounts"></i>
+                                        </div>
+                                        <div class="navLateral-body-cr hide-on-tablet">
+                                            CLIENTES</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {{/if}}
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="#!" class="full-width btn-subMenu">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-face"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">
+                                    EMPLEADO</div>
+                                <span class="zmdi zmdi-chevron-left"></span>
+                            </a>
+                            <ul class="full-width menu-principal sub-menu-options">
+                                <li class="full-width">
+                                    <a href="/admin/registro_empleado" class="full-width">
+                                        <div class="navLateral-body-cl">
+                                            <i class="zmdi zmdi-account"></i>
+                                        </div>
+                                        <div class="navLateral-body-cr hide-on-tablet">
+                                            REGISTRO EMPLEADO</div>
+                                    </a>
+                                </li>
+                                <li class="full-width">
+                                    <a href="/admin/asignar_empleados" class="full-width">
+                                        <div class="navLateral-body-cl">
+                                            <i class="zmdi zmdi-accounts"></i>
+                                        </div>
+                                        <div class="navLateral-body-cr hide-on-tablet">
+                                            ASIGNACIÓN EMPLEADO</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {{/if}}
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="/admin/productos" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-washing-machine"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">
+                                    PRODUCTOS
+                                </div>
+                            </a>
+                        </li>
+                        {{/if}}
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="/admin/ventas" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-shopping-cart"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">VENTAS</div>
+                            </a>
+                        </li>
+                        {{/if}}
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="/admin/inventario" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-store"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">INVENTARIO</div>
+                            </a>
+                        </li>
+                        {{else}}
+                        <li class="full-width">
+                            <a href="/admin/inventariocliente" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-store"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">INVENTARIO</div>
+                            </a>
+                        </li>
+                        {{/if}}
+                        <li class="full-width divider-menu-h"></li>
+                        {{#if user.verificar}}
+                        <li class="full-width">
+                            <a href="/admin/configuracion" class="full-width">
+                                <div class="navLateral-body-cl">
+                                    <i class="zmdi zmdi-wrench"></i>
+                                </div>
+                                <div class="navLateral-body-cr hide-on-tablet">CONFIGURACIONES</div>
+                            </a>
+                        </li>
+                        {{/if}}
+                    </ul>
+                </nav>
+            </div>
+        </section>
+        {{/if}}     
+        <div id="contenidoTotal">
+            {{{body}}}  
+        </div>         
+    </div>
+    <div id="printer">
+        <canvas id="grafico1" width="100" height="100"></canvas>
+    </div>
+{{#if user}}
+    <footer class="navbar-fixed-bottom">
+        <!--Puede ser usado para mostrar la función de cada elemento cuando se pase el mouse arriba -->
+        <p id="infoElemento" class="infoElemento"></p>        
+    </footer>
+{{/if}}
+    <!--Scripts principales (estos afectan a todo el sistema)-->
+    <script src="../general/scripts/jquery.js" type="text/javascript"></script>
+    <script src="../general/scripts/bootstrap.js" type="text/javascript"></script>
+    <script src="../general/scripts/npm.js" type="text/javascript"></script>
+    
+    
+    <script src="../general/scripts/validacion_form.js"></script>
+    <script src="../general/scripts/indentificaciones.js"></script>
+    <script src="../general/scripts/validation.js"></script>
+    <!--Estilos principales (estos afectan a todo el sistema)-->
+    <link rel="stylesheet" href="../general/estilos/bootstrap.css">
+    <link rel="stylesheet" href="../general/estilos/bootstrap-theme.css">
+</body>
+
+</html>
