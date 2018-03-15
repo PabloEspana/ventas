@@ -6,27 +6,29 @@ var config = require('../modelos/configuraciones');
 
 ////////////////////////////////////////////////////////////////////////////
 function obtenerFecha() {
-	var date = new Date();
-	dia = date.getDate();
-	mes = (date.getMonth()) + 1;
-	anio = date.getFullYear();
+	var date = new Date(); // Peparamos para crear la fecha
+	dia = date.getDate(); // Obtención del día
+	mes = (date.getMonth()) + 1; // Obtención del mes
+	anio = date.getFullYear(); // Obtención del año
 	fecha = dia + "/" + mes + "/" + anio;
 	return fecha;
 }
 
-
+// variables para guardar el código de la venta y controlar si hay registros
 var CodVen_Vent = 0
 var hayRegistros = false
+
 function obtenerVistaVenta(req, res) {
-	venta_model.find({}, (err, total) => {
-		if (err) {
+	// Función para cargar los datos que visualizará el cliente en la vista de ventas
+	venta_model.find({}, (err, total) => { // Consulta de registros en la colección ventas
+		if (err) { // Comprobación si existe error en la consulta
 			console.log("error")
-		} else {
-            config.find({},function (err,configuracion){
-                if (!total.length) {//Si no hay nada aun
+		} else { // Si no hay error se procede a consultar en la colección de configuraciones
+            config.find({}, function (err, configuracion){
+                if (!total.length) { // Si no hay nada aun en ventas el codigo de factura será 1 (primera factura)
                     CodVen_Vent = 1
                     res.render('ventas', { factura: CodVen_Vent ,config:configuracion})
-                } else {
+                } else { // De lo contrario el código irá incrementando
                     CodVen_Vent = total.length + 1
                     res.render('ventas', { factura: CodVen_Vent,config:configuracion})
                 }
@@ -82,6 +84,37 @@ function vistaReporteVentas(req, res){
 	});
 }
 
+function busquedaCliente(req, res) {
+	var cedula = req.params.cedula
+	cliente.findOne({ Ced_Cli: cedula }, (err, clienteObtenido) => {
+		if (err) {
+			res.render('500', { error: "Error del sistema :(", descripcion: "¡Vaya!, algo salió mal. Tu petición no ha sido completada. Por favor inténtelo nuevamente" })
+		} else {
+			if (!clienteObtenido) {
+				res.send({ cliente: "El cliente no existe" })
+			} else {
+				res.status(200).send({ cliente: clienteObtenido })
+			}
+		}
+	});
+}
+
+function busquedaProducto(req, res) {
+	var codigo = req.params.codigo;
+	productos.findOne({ Cod_Prod: codigo }, (err, productoObtenido) => {
+		if (err) {
+			res.status(500).send({ error: "Error al buscar" })
+		} else {
+			if (!productoObtenido) {
+				res.send({ producto: "El producto no existe" })
+			} else {
+				res.status(200).send({ producto: productoObtenido })
+				console.log("Encontrado");
+			}
+		}
+	});
+}
+
 function registrarVenta(req, res) {
 	var params = req.body;
 	var date = new Date();
@@ -110,14 +143,11 @@ function registrarVenta(req, res) {
 			for (var i = 0; i < products.length; i++) {
 				productos.findOneAndUpdate({ Cod_Prod: products[i].codigo }, { Exis_Prod: (products[i].existencia - products[i].cantidad) }, { new: false }, (err, productUpdated) => {
 					if (err) {
-						//res.render('succesProducts', { error: "Error al actualizar el producto (error 500)" })
 						res.render('500', { error: "Error del sistema :(", descripcion: "¡Vaya!, algo salió mal. Tu petición no ha sido completada. Por favor inténtelo nuevamente" })
 					} else {
 						if (!productUpdated) {
-							//res.render('succesProducts', { error: "No se ha podido actualizar el producto (error 400)" })
 							console.log("No se actualizao la existencia de un producto")
 						} else {
-							//res.render('succesProducts', { edicion: 'Editado correctamente' })
 							console.log("Producto actualizado")
 						}
 					}
@@ -129,39 +159,5 @@ function registrarVenta(req, res) {
 	})
 }
 
-function busquedaCliente(req, res) {
-	var cedula = req.params.cedula
-	cliente.findOne({ Ced_Cli: cedula }, (err, clienteObtenido) => {
-		if (err) {
-			//res.status(500).send({ error: "Error al buscar" });
-			res.render('500', { error: "Error del sistema :(", descripcion: "¡Vaya!, algo salió mal. Tu petición no ha sido completada. Por favor inténtelo nuevamente" })
-		} else {
-			if (!clienteObtenido) {
-				//res.render('ventas', { error: "El cliente no existe" })
-				res.send({ cliente: "El cliente no existe" })
-			} else {
-				//res.render('ventas', {cliente:clienteObtenido});
-				res.status(200).send({ cliente: clienteObtenido })
-			}
-		}
-	});
-}
-function busquedaProducto(req, res) {
-	var codigo = req.params.codigo;
-	productos.findOne({ Cod_Prod: codigo }, (err, productoObtenido) => {
-		if (err) {
-			//res.render('500', { error: err })
-			res.status(500).send({ error: "Error al buscar" })
-		} else {
-			if (!productoObtenido) {
-				//res.render('ventas', { error: "El cliente no existe" })
-				res.send({ producto: "El producto no existe" })
-			} else {
-				//res.render('ventas', {cliente:clienteObtenido});
-				res.status(200).send({ producto: productoObtenido })
-				console.log("Encontrado");
-			}
-		}
-	});
-}
+
 module.exports = { obtenerVistaVenta, obtenerVistaConsultaVentas, vistaReporteVentas, consultarVentas, registrarVenta, busquedaCliente, busquedaProducto }
