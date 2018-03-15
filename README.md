@@ -46,4 +46,4 @@ contraseña: admin
 
 ### Colaboradores
 
-Puede ver la lista de colaboradores del proyecto en el siguiente [enlace](https://github.com/PabloEspana/ventas/blob/master/colaboradores.md).
+Puede ver la lista de colaboradores del proyecto en el siguiente [enlace](https://github.com/PabloEspana/ventas/wiki/Colaboradores).
