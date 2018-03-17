@@ -1,3 +1,4 @@
+// 420 de 436
 var cedula = document.getElementById('cedula');
 var cliente = document.getElementById('cliente');
 var descripcion = document.getElementById('descripcion');
@@ -26,47 +27,39 @@ datos = { productos: [] }//Creacion de Objeto para guardar los productos de la v
 enviarContenido = document.getElementById('tablaProductos');//Referencia a la tabla donde se envia el contenido
 
 
-/////////////////////////////////////////Agregar Productos///////////////////////////////////////
+//----------------------------------Agregar Producto----------------------------------------------
+// Una vez encontrado el producto (ver evento a BuscarProducto) se procede a agregarlo a la tabla
 function agregarProducto() {
-	var superaExistencia = false // Variable para controlar la existencia
+	var superaExistencia = false    // Se declara una variable para controlar la exixtencia
 	if ( productoEncontrado ) { // Si existe el producto se procede a validar la existencia
 		if (cantidad.value == "" || cantidad.value == 0) { // Si no se ingresa cantidad por defecto será 1
 			cantidad.value = 1
 		}
-		if (controlarExistencia(cantidad.value, existenciaProductoActual)) { // Si cantidad es mayor a existencia
-			swal({
-				type: 'error',
-				title: 'Incorrecto',
-				text: 'Cantidad ingresada es mayor a existencia del producto. Total de '
-				+ descripcion.value + ' en existencia: ' + existenciaProductoActual,
-				showCancelButton: false,
-				confirmButtonText: 'Ok',
-				cancelButtonText: 'No',
-				closeOnConfirm: true
-			})
-		} else {//Si no es mayor
+		// Se envía a la función 'controlarExistencia' la cantidad ingresada y la existencia actual de ese producto
+		if (controlarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
+			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
+					`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
+					confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true } )
+		} else {    // Si el producto está disponible en existencia
 			var cont = 0
 			if (cantidad.value == "" || cantidad.value == 0) {//Si no se ingresa cantidad por defecto será 1
 				cantidadFinal = 1
 			} else {
-				cantidadFinal = cantidad.value//Cantidad será el valor ingresado pero se procede a comprobar si el producto ya se escogio	
+				cantidadFinal = cantidad.value    // Cantidad final será el valor ingresado pero se procede a comprobar si el producto ya se escogio	
 			}
-			for (var data in datos.productos) {// Recorre todos los codigos de productos para comprobar si se repite
-				var aComparar = datos.productos[data].codigo
-				cont += 1
-				if (codigo.value == aComparar) {//Compara si existe
+			for (var data in datos.productos) {    // Recorre todos los codigos de productos para comprobar si se repite
+				var aComparar = datos.productos[data].codigo    // aComparar representa cada código de la lista de productos
+				cont += 1    // incremento del contador
+				if (codigo.value == aComparar) {    //   Si el código ingresado ya existe en la lista de productos
 					if (tipoInsercion == 'Agregar') {//Si va a agregar y ya existe se suma la cantidad a la anterior
 						var cant = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
 						if (cant > datos.productos[data].existencia) {//Antes comprueba la existencia
 							swal({
-								type: 'error',
-								title: 'Incorrecto',
+								type: 'error', title: 'Incorrecto',
 								text: 'Cantidad ingresada es mayor a existencia del producto. Total de '
 								+ descripcion.value + ' en existencia: ' + datos.productos[data].existencia,
-								showCancelButton: false,
-								confirmButtonText: 'Ok',
-								cancelButtonText: 'No',
-								closeOnConfirm: true
+								showCancelButton: false, confirmButtonText: 'Ok',
+								cancelButtonText: 'No', closeOnConfirm: true
 							})
 							superaExistencia = true
 						} else {
@@ -85,11 +78,9 @@ function agregarProducto() {
 				}
 			}
 
-			/////////////////////////////
 			if (!superaExistencia) {//Si no supera la existencia
 				price = (precio.value).replace(",", ".")//Cambio de coma a punto
-				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2);//CAlculo de total a pagar
-				//redondeado = Math.round(totalpagar1 * 1000) / 1000
+				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // CAlculo de total a pagar
 				var totalpagar2 = String(totalpagar1).replace(".", ",")//Volver a dejar la coma
 				id = "prod_" + Math.floor(Math.random() * 10000)//Identificador aleatorio para el registro
 				datos.productos.push(//Insercion de datos al objeto
@@ -97,24 +88,16 @@ function agregarProducto() {
 						id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
 						cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual
 					}
-				);
+				)
 				actualizarTabla();//Una vez insertados actualiza la tabla
-				//codigo.value = "", descripcion.value = "", precio.value = "", cantidad.value = ""
 				productoEncontrado = false
 				limpiarCamposProd();
 			}
 		}
 
 	} else {
-		swal({
-			type: 'error',
-			title: 'Datos incompletos',
-			text: 'Debe buscar un producto',
-			showCancelButton: false,
-			confirmButtonText: 'Ok',
-			cancelButtonText: 'No',
-			closeOnConfirm: true
-		})
+		swal( { type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false, 
+				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true })
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +114,6 @@ function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 			precio.value = datos.productos[data].precio
 			cantidad.value = datos.productos[data].cantidad
 			productoEncontrado = true
-			//alert(datos.productos[data].existencia)
 			existenciaProductoActual = datos.productos[data].existencia
 			tipoInsercion = 'Modificar'
 			document.getElementById('guardar-actualizar').innerHTML = "Actualizar"
@@ -157,15 +139,13 @@ function eliminarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 		}
 	});
 }
-/////////////////////////////Actualizar tabla de productos//////////////////////////////////////
+///////////////////////////// Actualizar tabla de productos //////////////////////////////////////
 function actualizarTabla() {
-	//totalObtenido = 0
 	contadorProductos = 0
 	total = 0, calculoIVA = 0//Puede cambiar valor de IVA de 12
 	var descuento = 5
-	//	calculoDesc = 0;//En este caso esta establecido de 5%
 	tablaGernerada = ''
-	subtotal = 0///////////////////////
+	subtotal = 0
 	numeroProd=0
 	console.log(JSON.stringify(datos.productos))
 	for (var data in datos.productos) {
@@ -176,7 +156,6 @@ function actualizarTabla() {
 		tablaGernerada += '<td><button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + data + '" onClick="modificarProducto(' + (parseInt(data) + 1) + ')"><i style="color:#3F9735"class="zmdi zmdi-edit"></i></button>    '
 		tablaGernerada += '<button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + data + '" onClick="eliminarProducto(' + (parseInt(data) + 1) + ')"><i style="color:#B71C1C"class="zmdi zmdi-close-circle"></i></button></td></tr>'
 		totalObtenido = String(datos.productos[data].totalAPagar).replace(",", ".")
-		//console.log(totalObtenido)
 		contadorProductos++
 		subtotal += parseFloat(totalObtenido)
 	}
@@ -272,46 +251,35 @@ BuscarCliente.addEventListener('click', () => {
 
 
 });
-/////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------Búsqueda de producto en la base de datos--------------------------------------
 var BuscarProducto = document.getElementById('btnBuscarProducto')
 BuscarProducto.addEventListener('click', () => {
-	var codigo = document.getElementById('codigo').value;
-	if (estadoBoton2 == "buscar") {
-		if (codigo.length > 0) {
-			$.ajax({ type: "GET", url: "/admin/buscarprod/" + codigo, dataType: "json", contentType: "text/plain" }).done((datosProd) => {
-				if (datosProd.producto.length) {
-					descripcion.value = ""
-					swal({
-						type: "error",
-						title: 'No se encontró',
-						text: 'Busque un producto que este registrado',
-						confirmButtonText: 'Ok',
-						closeOnConfirm: true
-					})
-					productoEncontrado = false
-				} else {
-					document.getElementById('codigo').disabled = true
-					estadoBoton2 = "limpiar"
-					BuscarProducto.innerHTML = "Nuevo"
-					descripcion.value = datosProd.producto.Des_Prod
-					precio.value = datosProd.producto.PrecVen_Pro
-					existenciaProductoActual = datosProd.producto.Exis_Prod
-					productoEncontrado = true
-					console.log(existenciaProductoActual)
+	var codigo = document.getElementById('codigo').value;    // Obtengo el código ingresado
+	if (estadoBoton2 == "buscar") {    // Si en el botón para buscar un producto esta listo para buscar
+		if (codigo.length > 0) {    // Compruebo que se ha ingresado un código para buscar
+			$.ajax({ type: "GET", url: `/admin/buscarprod/${codigo}`, dataType: "json", contentType: "text/plain" }).done((datosProd) => {
+				if (datosProd.producto.length) {    // Si no existe ese producto
+					descripcion.value = ""    // El campo descripción se deja en blanco
+					swal( { type: "error", title: 'No se encontró', text: 'Busque un producto que este registrado',
+							confirmButtonText: 'Ok', closeOnConfirm: true } )    // Se envía la información correspondiente al modal
+					productoEncontrado = false    // Indico que no se encontró el producto
+				} else {    // Si encuentro el producto
+					document.getElementById('codigo').disabled = true    // desactivo el campo para no ingresar algo más
+					estadoBoton2 = "limpiar"	// El bontón cambia su estado, ahora esta listo para limpiar o agregar nuevo
+					BuscarProducto.innerHTML = "Nuevo"    // El texto del botón cambia a Nuevo
+					descripcion.value = datosProd.producto.Des_Prod                //     Envío los datos obtenidos
+					precio.value = datosProd.producto.PrecVen_Pro                  // a los campos correspondientes
+					existenciaProductoActual = datosProd.producto.Exis_Prod    // Guardo en variable el número de existencia
+					productoEncontrado = true    // Indico que se encontró el producto
 				}
 			});
-		} else {
-			swal({
-				type: "error",
-				title: 'Datos incompletos',
-				text: 'Especifique el código del producto',
-				confirmButtonText: 'Ok',
-				closeOnConfirm: true
-			})
-			productoEncontrado = false
+		} else { // Si no se ingresa un código en el campo de texto (esta vacío)
+			swal( { type: "error", title: 'Datos incompletos', text: 'Especifique el código del producto',
+					confirmButtonText: 'Ok', closeOnConfirm: true } )
+			productoEncontrado = false    // Indico que no se encontró el producto
 		}
-	} else if (estadoBoton2 == "limpiar") {
+	} else if (estadoBoton2 == "limpiar") {   // Si el estado del botón es limpiar llamo la función para limpiar los campos 
 		limpiarCamposProd()
 	}
 

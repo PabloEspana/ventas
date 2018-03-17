@@ -1,28 +1,26 @@
 //Establecemos la crecaión del servidor de elementos__________________________________________________________________________________________
 const cookieParser = require('cookie-parser'),
-  bodyParser = require('body-parser'),
-  exphbs = require('express-handlebars'),
-  expressValidator = require('express-validator'),
-  flash = require('connect-flash'),
-  session = require('express-session'),
-  path = require('path');
-  passport = require('passport'),
-  LocalStrategy = require('passport-local').Strategy,
-  mongoose = require('mongoose'),
-  express = require('express'),
-  servidor = express();
-  user = require('./modelos/user')
+bodyParser = require('body-parser'),
+exphbs = require('express-handlebars'),
+expressValidator = require('express-validator'),
+flash = require('connect-flash'),
+session = require('express-session'),
+path = require('path');
+passport = require('passport'),
+LocalStrategy = require('passport-local').Strategy,
+mongoose = require('mongoose'),
+express = require('express'),
+servidor = express();
+user = require('./modelos/user')
 
 
-//var puerto=Math.floor(Math.random() * (5000 - 3000)) + 3000
 var puerto=3000;
 var http = require('http').Server(servidor),
 port = process.env.PORT || puerto;
 var archivos=null;
 
-////=======================descomentar la linea de abajo para conectar a la base de datos ======================//
 //mongoose.connect('mongodb://Admin:abc123.....@ds127963.mlab.com:27963/prueba',{ server: { reconnectTries: Number.MAX_VALUE } });
-mongoose.connect('mongodb://127.0.0.1:27017/ventas',{ server: { reconnectTries: Number.MAX_VALUE } });
+mongoose.connect('mongodb://127.0.0.1:27017/ventas',{ server: { reconnectTries: Number.MAX_VALUE } }); // Conexión a BD
 
 //-----------------Creación de usuario administrador por defecto-------------------
 user.find({}, (err, usuarios) => {
@@ -42,7 +40,7 @@ user.find({}, (err, usuarios) => {
 })
 
 
-//Estas rutas dependen de la carpeta rutas___________________________________________________________________________________________________
+//Estas rutas dependen de la carpeta rutas
 //Si se incrementa una nueva ruta deberá ser referenciada en esta parte
 var routes = require('./rutas/index'),
   users = require('./rutas/users'),
@@ -186,15 +184,8 @@ function ventanaPrincipal() {
   cargando.show()
 }
 
-//La aplicación se inicia__________________________________________________________________________________________________
-app.on('ready', ventanaPrincipal);
-
-//Se cierran todas las ventanas de la aplicación___________________________________________________________________________
-//app.on('window-all-closed', ()=>{ app.quit()});
-
-//La aplicación se activa__________________________________________________________________________________________________
-app.on('activate', () => { if (mainWindow === null) { ventanaPrincipal() } });
-
+app.on('ready', ventanaPrincipal); // Se inicia la aplicación
+app.on('activate', () => { if (mainWindow === null) { ventanaPrincipal() } }); // Se activa la aplicación
 app.on('window-all-closed', function (event) {
   event.preventDefault();
 })

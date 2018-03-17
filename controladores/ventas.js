@@ -3,8 +3,6 @@ var cliente = require('../modelos/cliente');
 var productos = require('../modelos/productos');
 var config = require('../modelos/configuraciones');
 
-
-////////////////////////////////////////////////////////////////////////////
 function obtenerFecha() {
 	var date = new Date(); // Peparamos para crear la fecha
 	dia = date.getDate(); // Obtención del día
@@ -116,14 +114,14 @@ function busquedaProducto(req, res) {
 }
 
 function registrarVenta(req, res) {
-	var params = req.body;
-	var date = new Date();
+	var params = req.body; // Obtengo los datos del formulario
+	var date = new Date(); // Instancia de la fecha
 	dia = date.getDate();
 	mes = (date.getMonth()) + 1;
 	anio = date.getFullYear();
-	var Fech_Vent = dia + "/" + mes + "/" + anio;
+	var Fech_Vent = dia + "/" + mes + "/" + anio; // Creo una nueva fecha para asegurarse de que se registra el día correcto
 
-	var nuevaVenta = new venta_model({
+	var nuevaVenta = new venta_model({ // Modelo ventas
 		CodVen_Vent: CodVen_Vent,
 		Ced_Vent: params.Ced_Vent,
 		NomCli_Vent: params.NomCli_Vent,
@@ -133,14 +131,12 @@ function registrarVenta(req, res) {
 		Total_Vent: params.Total_Vent
 	})
 	CodPro_Vent: params.CodPro_Vent
-	nuevaVenta.save(function (error, resp) {
+	nuevaVenta.save(function (error, resp) { // Registro la venta y actualizao el inventario
 		if (error) {
 			res.render('500', { error: "Error del sistema :(", descripcion: "¡Vaya!, algo salió mal. Tu petición no ha sido completada. Por favor inténtelo nuevamente" })
-			console.log(error)
-			console.log("Error al guardar venta")
 		} else {
 			var products = params.CodPro_Vent.productos
-			for (var i = 0; i < products.length; i++) {
+			for (var i = 0; i < products.length; i++) { // Por cada producto se reducirá la existencia
 				productos.findOneAndUpdate({ Cod_Prod: products[i].codigo }, { Exis_Prod: (products[i].existencia - products[i].cantidad) }, { new: false }, (err, productUpdated) => {
 					if (err) {
 						res.render('500', { error: "Error del sistema :(", descripcion: "¡Vaya!, algo salió mal. Tu petición no ha sido completada. Por favor inténtelo nuevamente" })
