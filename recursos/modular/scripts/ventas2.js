@@ -1,4 +1,4 @@
-// 420 de 436
+// 400 de 436
 var cedula = document.getElementById('cedula');
 var cliente = document.getElementById('cliente');
 var descripcion = document.getElementById('descripcion');
@@ -9,9 +9,7 @@ var subtotal = 0, ultimototal = 0, suma = 0, existenciaProductoActual = 0
 var contadorProductos = 0
 var estadoBoton1 = "buscar", estadoBoton2 = "buscar"
 var numeroProd = 0,
-//IVA = document.getElementById('iva').value || 12;
-IVA = 12;
-//var descuento = 5; //Valor que va a cambiar
+IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
 totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nuevaCantidad = 0, cantidadFinal = 0,
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
@@ -32,9 +30,6 @@ enviarContenido = document.getElementById('tablaProductos');//Referencia a la ta
 function agregarProducto() {
 	var superaExistencia = false    // Se declara una variable para controlar la exixtencia
 	if ( productoEncontrado ) { // Si existe el producto se procede a validar la existencia
-		//if (cantidad.value == "" || cantidad.value == 0) { // Si no se ingresa cantidad por defecto será 1
-		//	cantidad.value = 1
-		//}
 		// Se envía a la función 'controlarExistencia' la cantidad ingresada y la existencia actual de ese producto
 		if (controlarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
 			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
@@ -52,19 +47,7 @@ function agregarProducto() {
 				cont += 1    // incremento del contador
 				if (codigo.value == aComparar) {    //   Si el código ingresado ya existe en la lista de productos
 					if (tipoInsercion == 'Agregar') {//Si va a agregar y ya existe se suma la cantidad a la anterior
-						//var cant = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-						//if (cant > datos.productos[data].existencia) {//Antes comprueba la existencia
-						//	swal({
-						//		type: 'error', title: 'Incorrecto',
-						//		text: 'Cantidad ingresada es mayor a existencia del producto. Total de '
-						//		+ descripcion.value + ' en existencia: ' + datos.productos[data].existencia,
-						//		showCancelButton: false, confirmButtonText: 'Ok',
-						//		cancelButtonText: 'No', closeOnConfirm: true
-						//	})
-						//	superaExistencia = true
-						//} else {
 						cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-						//}
 					} else if (tipoInsercion == 'Modificar') {//Si se va a modificar uno que ya existe
 						cantidadFinal = cantidad.value
 						document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto"
@@ -77,7 +60,6 @@ function agregarProducto() {
 					}
 				}
 			}
-
 			if (!superaExistencia) {//Si no supera la existencia
 				price = (precio.value).replace(",", ".")//Cambio de coma a punto
 				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // CAlculo de total a pagar
@@ -94,7 +76,6 @@ function agregarProducto() {
 				limpiarCamposProd();
 			}
 		}
-
 	} else {
 		swal( { type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false, 
 				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true })
@@ -402,7 +383,6 @@ function tablaImprimir() {
 	tablaGernerada += '</tr>'
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
-
 
 function controlarExistencia(cantidad, existencia) {
 	if (cantidad > existencia) {
