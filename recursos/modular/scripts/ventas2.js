@@ -32,9 +32,9 @@ enviarContenido = document.getElementById('tablaProductos');//Referencia a la ta
 function agregarProducto() {
 	var superaExistencia = false    // Se declara una variable para controlar la exixtencia
 	if ( productoEncontrado ) { // Si existe el producto se procede a validar la existencia
-		if (cantidad.value == "" || cantidad.value == 0) { // Si no se ingresa cantidad por defecto será 1
-			cantidad.value = 1
-		}
+		//if (cantidad.value == "" || cantidad.value == 0) { // Si no se ingresa cantidad por defecto será 1
+		//	cantidad.value = 1
+		//}
 		// Se envía a la función 'controlarExistencia' la cantidad ingresada y la existencia actual de ese producto
 		if (controlarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
 			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
@@ -52,19 +52,19 @@ function agregarProducto() {
 				cont += 1    // incremento del contador
 				if (codigo.value == aComparar) {    //   Si el código ingresado ya existe en la lista de productos
 					if (tipoInsercion == 'Agregar') {//Si va a agregar y ya existe se suma la cantidad a la anterior
-						var cant = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-						if (cant > datos.productos[data].existencia) {//Antes comprueba la existencia
-							swal({
-								type: 'error', title: 'Incorrecto',
-								text: 'Cantidad ingresada es mayor a existencia del producto. Total de '
-								+ descripcion.value + ' en existencia: ' + datos.productos[data].existencia,
-								showCancelButton: false, confirmButtonText: 'Ok',
-								cancelButtonText: 'No', closeOnConfirm: true
-							})
-							superaExistencia = true
-						} else {
-							cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-						}
+						//var cant = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
+						//if (cant > datos.productos[data].existencia) {//Antes comprueba la existencia
+						//	swal({
+						//		type: 'error', title: 'Incorrecto',
+						//		text: 'Cantidad ingresada es mayor a existencia del producto. Total de '
+						//		+ descripcion.value + ' en existencia: ' + datos.productos[data].existencia,
+						//		showCancelButton: false, confirmButtonText: 'Ok',
+						//		cancelButtonText: 'No', closeOnConfirm: true
+						//	})
+						//	superaExistencia = true
+						//} else {
+						cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
+						//}
 					} else if (tipoInsercion == 'Modificar') {//Si se va a modificar uno que ya existe
 						cantidadFinal = cantidad.value
 						document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto"
