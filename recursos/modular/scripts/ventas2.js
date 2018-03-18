@@ -1,4 +1,4 @@
-// 400 de 436
+// 384 de 453
 var cedula = document.getElementById('cedula');
 var cliente = document.getElementById('cliente');
 var descripcion = document.getElementById('descripcion');
@@ -14,66 +14,65 @@ totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nu
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
 window.onload = () => { // Evento de carga
-	var date = new Date();  // Instancia de Date
-	var labelFecha = document.getElementById('fecha'); // Se obtiene el label de la fecha
-	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear(); // Obtener día, mes y año actual
-	labelFecha.innerHTML = "Fecha de la Venta: " + dia + "/" + mes + "/" + anio; // Envio de la fecha al body
+	date = new Date()  // Instancia de Date
+	labelFecha = document.getElementById('fecha') // Se obtiene el label de la fecha
+	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear() // Obtener día, mes y año actual
+	labelFecha.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}` // Envio de la fecha a la vista ventas
 }
 
-boton = document.getElementById('btn-agregar').addEventListener('click', agregarProducto); // Al presionar ejecuta la funcion para agregar items
+//-------------------------Asignación de eventos a los botones----------------------------------
+botonBuscarProducto = document.getElementById('btnBuscarProducto')
+botonBuscarProducto.addEventListener('click', buscarProducto)
+botonAgregarProducto = document.getElementById('btn-agregar')
+botonAgregarProducto.addEventListener('click', agregarProducto) // Al presionar ejecuta la funcion para agregar items
 datos = { productos: [] }//Creacion de Objeto para guardar los productos de la venta
 enviarContenido = document.getElementById('tablaProductos');//Referencia a la tabla donde se envia el contenido
-
 
 //----------------------------------Agregar Producto----------------------------------------------
 // Una vez encontrado el producto (ver evento a BuscarProducto) se procede a agregarlo a la tabla
 function agregarProducto() {
 	var superaExistencia = false    // Se declara una variable para controlar la exixtencia
-	if ( productoEncontrado ) { // Si existe el producto se procede a validar la existencia
-		// Se envía a la función 'controlarExistencia' la cantidad ingresada y la existencia actual de ese producto
-		if (controlarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
+	if (productoEncontrado) { // Si existe el producto se procede a validar la existencia
+		// Se envía a la función 'comprobarExistencia' la cantidad ingresada y la existencia actual de ese producto
+		if (comprobarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
 			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
 					`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
 					confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true } )
 		} else {    // Si el producto está disponible en existencia
 			var cont = 0
-			if (cantidad.value == "" || cantidad.value == 0) {//Si no se ingresa cantidad por defecto será 1
+			if (cantidad.value == "" || cantidad.value == 0) {    // Si no se ingresa cantidad por defecto será 1
 				cantidadFinal = 1
 			} else {
 				cantidadFinal = cantidad.value    // Cantidad final será el valor ingresado pero se procede a comprobar si el producto ya se escogio	
 			}
 			for (var data in datos.productos) {    // Recorre todos los codigos de productos para comprobar si se repite
-				var aComparar = datos.productos[data].codigo    // aComparar representa cada código de la lista de productos
+				var aComparar = datos.productos[data].codigo    // aComparar representa cada código del producto en la lista
 				cont += 1    // incremento del contador
-				if (codigo.value == aComparar) {    //   Si el código ingresado ya existe en la lista de productos
-					if (tipoInsercion == 'Agregar') {//Si va a agregar y ya existe se suma la cantidad a la anterior
+				if (codigo.value == aComparar) {    // Si el código ingresado ya existe en la lista de productos
+					if (tipoInsercion == 'Agregar') {    // Si va a agregar y ya existe se suma la cantidad a la anterior
 						cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-					} else if (tipoInsercion == 'Modificar') {//Si se va a modificar uno que ya existe
+					} else if (tipoInsercion == 'Modificar') {    // Si se va a modificar uno que ya existe
 						cantidadFinal = cantidad.value
 						document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto"
-						document.getElementById('btnBuscarProducto').disabled = false
+						botonBuscarProducto.disabled = false
 						codigo.disabled = false
 					}
-					if (!superaExistencia) {
-						datos.productos.splice(cont - 1, 1)//a partir de x borrar n cantidad de elemento(s)
+					if (!superaExistencia) {   // Para borrar los items repetidos y evitar redundancia
+						datos.productos.splice(cont - 1, 1)    // a partir de la posición del item actual (cont -1) borrar 1 elemento
 						tipoInsercion = 'Agregar'
 					}
 				}
 			}
-			if (!superaExistencia) {//Si no supera la existencia
-				price = (precio.value).replace(",", ".")//Cambio de coma a punto
-				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // CAlculo de total a pagar
-				var totalpagar2 = String(totalpagar1).replace(".", ",")//Volver a dejar la coma
-				id = "prod_" + Math.floor(Math.random() * 10000)//Identificador aleatorio para el registro
-				datos.productos.push(//Insercion de datos al objeto
-					{
-						id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
-						cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual
-					}
-				)
-				actualizarTabla();//Una vez insertados actualiza la tabla
-				productoEncontrado = false
-				limpiarCamposProd();
+			if (!superaExistencia) {    // Si el producto se encontró y su cantidad no supera la existencia
+				price = (precio.value).replace(",", ".")    // Cambio de coma a punto
+				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // Cáculo de total a pagar redondeo a dos decimales
+				var totalpagar2 = String(totalpagar1).replace(".", ",")    // Volver a cambiar por la coma
+				id = "prod_" + Math.floor(Math.random() * 10000)    // Identificador aleatorio para el item de la lista
+				datos.productos.push( { id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
+					  cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual })
+				actualizarTabla();    // Una vez insertados actualiza la tabla
+				productoEncontrado = false    // Disponible para buscar otro producto
+				limpiarCamposProd();    // Se limpian los campos del producto una vez agregado a la lista
 			}
 		}
 	} else {
@@ -81,16 +80,17 @@ function agregarProducto() {
 				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true })
 	}
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------Modificar Producto----------------------------------------------
+// Esta función se ejecuta al presionar los botones de modificar de cada item de la tabla
 function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 	var cont = 0
 	codigo.disabled = true
-	for (var data in datos.productos) {// Recorre todos los codigos de productos para comprobar si se repite
-		var aComparar = datos.productos[data].codigo
+	for (var data in datos.productos) {    // Recorrido de los priductos de la lista
+		var aComparar = datos.productos[data].codigo    // aComparar representa cada código del producto en la lista
 		cont += 1
-		if (identificador == cont) {
+		if (identificador == cont) {    // Al encontrarlo en la lista se envían sus datos al formulario
 			codigo.value = datos.productos[data].codigo
-			codigoGuardado = datos.productos[data].codigo
 			descripcion.value = datos.productos[data].descripcion
 			precio.value = datos.productos[data].precio
 			cantidad.value = datos.productos[data].cantidad
@@ -98,24 +98,21 @@ function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 			existenciaProductoActual = datos.productos[data].existencia
 			tipoInsercion = 'Modificar'
 			document.getElementById('guardar-actualizar').innerHTML = "Actualizar"
-			document.getElementById('btnBuscarProducto').disabled = true
+			botonBuscarProducto.disabled = true
 			break
 		}
 	}
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------Eliminar Producto----------------------------------------------
+// Esta función se ejecuta al presionar los botones de eliminar de cada item de la tabla
 function eliminarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 	swal({
-		title: 'Quitar Producto',
-		text: '¿Desea quitar este producto?',
-		showCancelButton: true,
-		confirmButtonText: 'Si',
-		cancelButtonText: 'No',
-		closeOnConfirm: true
+		title: 'Quitar Producto', text: '¿Desea quitar este producto?', showCancelButton: true,
+		confirmButtonText: 'Si', cancelButtonText: 'No', closeOnConfirm: true
 	}, function (isConfirm) {
 		if (isConfirm) {
 			datos.productos.splice(identificador - 1, 1)//a partir de x borrar n cantidad de elemento(s)
-			//contadorProductos--;
 			actualizarTabla()//Despues de eliminar elementos actualiza la tabla
 		}
 	});
@@ -127,8 +124,7 @@ function actualizarTabla() {
 	var descuento = 5
 	tablaGernerada = ''
 	subtotal = 0
-	numeroProd=0
-	console.log(JSON.stringify(datos.productos))
+	numeroProd = 0
 	for (var data in datos.productos) {
 		numeroProd += (parseInt(data) + 1)
 		tablaGernerada += '<tr><td>' + (parseInt(data) + 1) + '</td><td>' + datos.productos[data].codigo + '</td><td>' + datos.productos[data].descripcion + '</td>'
@@ -165,12 +161,6 @@ function actualizarTabla() {
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
 
-function cambioCedula() {
-	document.getElementById("cliente").value = ""
-}
-function validarCliente() {
-	alert("Debe ingresar los datos del cliente")
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 var BuscarCliente = document.getElementById('btnBuscarCliente')
 BuscarCliente.addEventListener('click', () => {
@@ -190,7 +180,6 @@ BuscarCliente.addEventListener('click', () => {
 					})
 					clienteEncontrado = false
 				} else {
-					console.log(datos)
 					document.getElementById('cedula').disabled = true
 					cliente.value = datos.cliente.Nomb_Cli
 					hayCliente = true
@@ -234,8 +223,7 @@ BuscarCliente.addEventListener('click', () => {
 });
 
 //----------------------------Búsqueda de producto en la base de datos--------------------------------------
-var BuscarProducto = document.getElementById('btnBuscarProducto')
-BuscarProducto.addEventListener('click', () => {
+function buscarProducto() {
 	var codigo = document.getElementById('codigo').value;    // Obtengo el código ingresado
 	if (estadoBoton2 == "buscar") {    // Si en el botón para buscar un producto esta listo para buscar
 		if (codigo.length > 0) {    // Compruebo que se ha ingresado un código para buscar
@@ -248,7 +236,7 @@ BuscarProducto.addEventListener('click', () => {
 				} else {    // Si encuentro el producto
 					document.getElementById('codigo').disabled = true    // desactivo el campo para no ingresar algo más
 					estadoBoton2 = "limpiar"	// El bontón cambia su estado, ahora esta listo para limpiar o agregar nuevo
-					BuscarProducto.innerHTML = "Nuevo"    // El texto del botón cambia a Nuevo
+					botonBuscarProducto.innerHTML = "Nuevo"    // El texto del botón cambia a Nuevo
 					descripcion.value = datosProd.producto.Des_Prod                //     Envío los datos obtenidos
 					precio.value = datosProd.producto.PrecVen_Pro                  // a los campos correspondientes
 					existenciaProductoActual = datosProd.producto.Exis_Prod    // Guardo en variable el número de existencia
@@ -263,14 +251,11 @@ BuscarProducto.addEventListener('click', () => {
 	} else if (estadoBoton2 == "limpiar") {   // Si el estado del botón es limpiar llamo la función para limpiar los campos 
 		limpiarCamposProd()
 	}
-
-
-});
+}
 
 function printDiv() {
 	var mensaje = ""
 	var faltanDatos = true
-	console.log(numeroProd)
 	if (numeroProd == 0) {
 		mensaje += " Debe agregar al menos 1 producto para realizar la venta. "
 		faltanDatos = false
@@ -353,13 +338,11 @@ function tablaImprimir() {
 	//	calculoDesc = 0;//En este caso esta establecido de 5%
 	tablaGernerada = ''
 	subtotal = 0///////////////////////
-	console.log(JSON.stringify(datos.productos))
 	for (var data in datos.productos) {
 		tablaGernerada += '<tr><td>' + (parseInt(data) + 1) + '</td><td>' + datos.productos[data].codigo + '</td><td>' + datos.productos[data].descripcion + '</td>'
 		tablaGernerada += '<td>$ ' + datos.productos[data].precio + '</td><td>' + datos.productos[data].cantidad + '</td>'
 		tablaGernerada += '<td>$ ' + datos.productos[data].totalAPagar + '</td></tr>'
 		totalObtenido = String(datos.productos[data].totalAPagar).replace(",", ".")
-		console.log(totalObtenido)
 		subtotal += parseFloat(totalObtenido)
 	}
 	calculoIVA = (subtotal * IVA) / 100
@@ -384,7 +367,7 @@ function tablaImprimir() {
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
 
-function controlarExistencia(cantidad, existencia) {
+function comprobarExistencia(cantidad, existencia) {
 	if (cantidad > existencia) {
 		return true
 	} else {
@@ -395,7 +378,7 @@ function controlarExistencia(cantidad, existencia) {
 function limpiarCamposProd() {
 	document.getElementById("codigo").disabled = false
 	codigo.value = "", descripcion.value = "", precio.value = "", cantidad.value = ""
-	BuscarProducto.innerHTML = "Buscar"
+	botonBuscarProducto.innerHTML = "Buscar"
 	estadoBoton2 = "buscar"
 	productoEncontrado = false
 }
