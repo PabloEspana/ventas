@@ -1,4 +1,4 @@
-// 384 de 453
+// 376 de 453
 var cedula = document.getElementById('cedula');
 var cliente = document.getElementById('cliente');
 var descripcion = document.getElementById('descripcion');
@@ -9,82 +9,87 @@ var subtotal = 0, ultimototal = 0, suma = 0, existenciaProductoActual = 0
 var contadorProductos = 0
 var estadoBoton1 = "buscar", estadoBoton2 = "buscar"
 var numeroProd = 0,
-IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
+	IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
 totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nuevaCantidad = 0, cantidadFinal = 0,
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
 window.onload = () => { // Evento de carga
-	date = new Date()  // Instancia de Date
-	labelFecha = document.getElementById('fecha') // Se obtiene el label de la fecha
-	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear() // Obtener día, mes y año actual
-	labelFecha.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}` // Envio de la fecha a la vista ventas
+	date = new Date() 
+	labelFecha = document.getElementById('fecha')
+	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear() 
+	labelFecha.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}`
 }
 
 //-------------------------Asignación de eventos a los botones----------------------------------
 botonBuscarProducto = document.getElementById('btnBuscarProducto')
 botonBuscarProducto.addEventListener('click', buscarProducto)
+botonBuscarCliente = document.getElementById('btnBuscarCliente')
+botonBuscarCliente.addEventListener('click', buscarCliente)
 botonAgregarProducto = document.getElementById('btn-agregar')
-botonAgregarProducto.addEventListener('click', agregarProducto) // Al presionar ejecuta la funcion para agregar items
-datos = { productos: [] }//Creacion de Objeto para guardar los productos de la venta
-enviarContenido = document.getElementById('tablaProductos');//Referencia a la tabla donde se envia el contenido
+botonAgregarProducto.addEventListener('click', agregarProducto)
 
+datos = { productos: [] }
+enviarContenido = document.getElementById('tablaProductos')
 
 function agregarProducto() {
-	var superaExistencia = false    // Para controlar la exixtencia
+	var cantidadActual = 0, existeEnLista = false
 	if (productoEncontrado) {
-		/*if (comprobarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
-			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
-					`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
-					confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true } )
-		} else {*/
-			var cont = 0, codigoAComparar = 0, 
-			cantidadFinal = cantidad.value
-			if (cantidad.value == "" || cantidad.value == 0) {
-				cantidadFinal = 1 // por defecto 1
+		var cont = 0, codigoAComparar = 0, Cantidad = cantidad.value
+		if (Cantidad == "" || Cantidad == 0) {
+			Cantidad = 1
+		}
+		for (var data in datos.productos) {
+			codigoAComparar = datos.productos[data].codigo
+			cont += 1
+			if (codigo.value == codigoAComparar) {
+				cantidadActual = datos.productos[data].cantidad
+				existeEnLista = true
+				break
 			}
-			
-			for (var data in datos.productos) {    // Comprobar si se repite
-				var codigoAComparar = datos.productos[data].codigo
-				cont += 1
-				if (codigo.value == codigoAComparar) {    // Si ya existe
-					if (tipoInsercion == 'Agregar') {
-						cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-					} else if (tipoInsercion == 'Modificar') {
-						cantidadFinal = cantidad.value
-						document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto"
-						botonBuscarProducto.disabled = false, codigo.disabled = false
-					}
-					//if (!superaExistencia) {   // Para borrar los items repetidos y evitar redundancia
-						datos.productos.splice(cont - 1, 1)    // a partir de la posición del item actual (cont -1) borrar 1 elemento
-						tipoInsercion = 'Agregar'
-					//}
-				}
+		}
+		if (tipoInsercion == 'Agregar') {
+			cantidadFinal = parseInt(cantidadActual) + parseInt(Cantidad)			
+		}else if (tipoInsercion == 'Modificar'){
+			cantidadFinal = parseInt(Cantidad)
+		}
+		if (superaExixtencia(cantidadFinal, existenciaProductoActual)) {
+			swal({
+				type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
+				`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
+				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true
+			})
+		} else {
+			if(existeEnLista){
+				datos.productos.splice(cont - 1, 1)  // borro el anterior
 			}
-			console.log(codigoAComparar)
-			//if (!superaExistencia) {    // Si se encontró y su cantidad no supera la existencia
-				price = (precio.value).replace(",", ".")
-				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // Redondeo 2 decimales
-				var totalpagar2 = String(totalpagar1).replace(".", ",")
-				id = "prod_" + Math.floor(Math.random() * 10000)
-				datos.productos.push( { id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
-					  cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual })
-				limpiarCamposProd(), actualizarTabla()
-				productoEncontrado = false
-			//}
-		//}
+			tipoInsercion = 'Agregar'
+			price = (precio.value).replace(",", ".")
+			totalpagar1 = parseFloat(parseFloat(price) * cantidadFinal).toFixed(2) // Redondeo 2 decimales
+			console.log(totalpagar1)
+			var totalpagar2 = String(totalpagar1).replace(".", ",")
+			id = "prod_" + Math.floor(Math.random() * 10000)
+			datos.productos.push({
+				id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
+				cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual
+			})
+			limpiarCamposProd(), actualizarTabla()
+			productoEncontrado = false
+		}
 	} else {
-		swal( { type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false, 
-				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true })
+		swal({
+			type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false,
+			confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true
+		})
 	}
 }
 
-function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
+function modificarProducto(identificador) {
 	var cont = 0
 	codigo.disabled = true
-	for (var data in datos.productos) {    // Recorrido de los priductos de la lista
-		var aComparar = datos.productos[data].codigo    // aComparar representa cada código del producto en la lista
+	for (var data in datos.productos) { 
+		var aComparar = datos.productos[data].codigo
 		cont += 1
-		if (identificador == cont) {    // Al encontrarlo en la lista se envían sus datos al formulario
+		if (identificador == cont) {
 			codigo.value = datos.productos[data].codigo
 			descripcion.value = datos.productos[data].descripcion
 			precio.value = datos.productos[data].precio
@@ -99,23 +104,21 @@ function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 	}
 }
 
-//----------------------------------Eliminar Producto----------------------------------------------
-// Esta función se ejecuta al presionar los botones de eliminar de cada item de la tabla
-function eliminarProducto(identificador) {// identificador 1, 2, 3, 4, etc
+function eliminarProducto(identificador) {
 	swal({
 		title: 'Quitar Producto', text: '¿Desea quitar este producto?', showCancelButton: true,
 		confirmButtonText: 'Si', cancelButtonText: 'No', closeOnConfirm: true
 	}, function (isConfirm) {
 		if (isConfirm) {
-			datos.productos.splice(identificador - 1, 1)//a partir de x borrar n cantidad de elemento(s)
-			actualizarTabla()//Despues de eliminar elementos actualiza la tabla
+			datos.productos.splice(identificador - 1, 1)
+			actualizarTabla()
 		}
 	});
 }
 ///////////////////////////// Actualizar tabla de productos //////////////////////////////////////
 function actualizarTabla() {
 	contadorProductos = 0, subtotal = 0, calculoIVA = 0, descuento = 5, total = 0,
-	numeroProd = 0    // Numero que aparece en la primera columna de la tabla
+		numeroProd = 0    // Numero que aparece en la primera columna de la tabla
 	tablaGernerada = ''
 	for (var data in datos.productos) {    // Recorrido a los items de la lista
 		numeroProd += (parseInt(data) + 1)    // Generación del número del producto
@@ -144,7 +147,7 @@ function actualizarTabla() {
 	tablaGernerada += '<tr><td></td><td></td><td></td><td></td>'
 	tablaGernerada += '<td><b><h6>Subtotal : </h6></b><b><h6>IVA : </h6></b><b><h6>Descuento : </h6></b>'
 	tablaGernerada += '<b><h6>Total : </h6></b>'
-	tablaGernerada += '<td><b><h6>$ ' + subtotal2+ '</h6></b><b><h6>$ ' + calculoIVA2 + '</h6></b><b><h6>$ ' + calculoDesc2 + '</h6></b>'
+	tablaGernerada += '<td><b><h6>$ ' + subtotal2 + '</h6></b><b><h6>$ ' + calculoIVA2 + '</h6></b><b><h6>$ ' + calculoDesc2 + '</h6></b>'
 	tablaGernerada += '<b><h6>$ ' + total2 + '</h6></b>'
 	tablaGernerada += '<td><center><button id="btn-imprimir" onclick="printDiv()" title="Imprimir Factura"'
 		+ 'class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;"'
@@ -153,9 +156,7 @@ function actualizarTabla() {
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////
-var BuscarCliente = document.getElementById('btnBuscarCliente')
-BuscarCliente.addEventListener('click', () => {
+function buscarCliente(){	
 	descuento = 0
 	var cedula = document.getElementById('cedula').value;
 	if (estadoBoton1 == "buscar") {
@@ -185,7 +186,7 @@ BuscarCliente.addEventListener('click', () => {
 					//------------Si se encuentra  se bloquea el campo y cambia el estado del boton------------------
 					document.getElementById('cedula').disabled = true
 					estadoBoton1 = "limpiar"
-					BuscarCliente.innerHTML = "Nuevo"
+					botonBuscarCliente.innerHTML = "Nuevo"
 					actualizarTabla()
 					//------------------------------------
 				}
@@ -205,42 +206,41 @@ BuscarCliente.addEventListener('click', () => {
 		document.getElementById("cliente").value = ""
 		clienteEncontrado = false
 		document.getElementById("cedula").disabled = false
-		BuscarCliente.innerHTML = "Buscar"
+		botonBuscarCliente.innerHTML = "Buscar"
 		estadoBoton1 = "buscar"
-		//actualizarTabla()
 	}
+};
 
-
-
-});
-
-//----------------------------Búsqueda de producto en la base de datos--------------------------------------
 function buscarProducto() {
-	var codigo = document.getElementById('codigo').value;    // Obtengo el código ingresado
+	var codigo = document.getElementById('codigo').value;
 	if (estadoBoton2 == "buscar") {    // Si en el botón para buscar un producto esta listo para buscar
-		if (codigo.length > 0) {    // Compruebo que se ha ingresado un código para buscar
+		if (codigo.length > 0) {
 			$.ajax({ type: "GET", url: `/admin/buscarprod/${codigo}`, dataType: "json", contentType: "text/plain" }).done((datosProd) => {
-				if (datosProd.producto.length) {    // Si no existe ese producto
-					descripcion.value = ""    // El campo descripción se deja en blanco
-					swal( { type: "error", title: 'No se encontró', text: 'Busque un producto que este registrado',
-							confirmButtonText: 'Ok', closeOnConfirm: true } )    // Se envía la información correspondiente al modal
-					productoEncontrado = false    // Indico que no se encontró el producto
-				} else {    // Si encuentro el producto
-					document.getElementById('codigo').disabled = true    // desactivo el campo para no ingresar algo más
-					estadoBoton2 = "limpiar"	// El bontón cambia su estado, ahora esta listo para limpiar o agregar nuevo
-					botonBuscarProducto.innerHTML = "Nuevo"    // El texto del botón cambia a Nuevo
-					descripcion.value = datosProd.producto.Des_Prod                //     Envío los datos obtenidos
-					precio.value = datosProd.producto.PrecVen_Pro                  // a los campos correspondientes
-					existenciaProductoActual = datosProd.producto.Exis_Prod    // Guardo en variable el número de existencia
-					productoEncontrado = true    // Indico que se encontró el producto
+				if (datosProd.producto.length) {
+					descripcion.value = ""
+					swal({
+						type: "error", title: 'No se encontró', text: 'Busque un producto que este registrado',
+						confirmButtonText: 'Ok', closeOnConfirm: true
+					})
+					productoEncontrado = false
+				} else {
+					document.getElementById('codigo').disabled = true
+					estadoBoton2 = "limpiar"
+					botonBuscarProducto.innerHTML = "Nuevo"
+					descripcion.value = datosProd.producto.Des_Prod
+					precio.value = datosProd.producto.PrecVen_Pro
+					existenciaProductoActual = datosProd.producto.Exis_Prod
+					productoEncontrado = true
 				}
 			});
-		} else { // Si no se ingresa un código en el campo de texto (esta vacío)
-			swal( { type: "error", title: 'Datos incompletos', text: 'Especifique el código del producto',
-					confirmButtonText: 'Ok', closeOnConfirm: true } )
-			productoEncontrado = false    // Indico que no se encontró el producto
+		} else {
+			swal({
+				type: "error", title: 'Datos incompletos', text: 'Especifique el código del producto',
+				confirmButtonText: 'Ok', closeOnConfirm: true
+			})
+			productoEncontrado = false
 		}
-	} else if (estadoBoton2 == "limpiar") {   // Si el estado del botón es limpiar llamo la función para limpiar los campos 
+	} else if (estadoBoton2 == "limpiar") {
 		limpiarCamposProd()
 	}
 }
@@ -359,7 +359,7 @@ function tablaImprimir() {
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
 
-function comprobarExistencia(cantidad, existencia) {
+function superaExixtencia(cantidad, existencia) {
 	if (cantidad > existencia) {
 		return true
 	} else {
