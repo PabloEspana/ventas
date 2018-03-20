@@ -28,61 +28,56 @@ botonAgregarProducto.addEventListener('click', agregarProducto) // Al presionar 
 datos = { productos: [] }//Creacion de Objeto para guardar los productos de la venta
 enviarContenido = document.getElementById('tablaProductos');//Referencia a la tabla donde se envia el contenido
 
-//----------------------------------Agregar Producto----------------------------------------------
-// Una vez encontrado el producto (ver evento a BuscarProducto) se procede a agregarlo a la tabla
+
 function agregarProducto() {
-	var superaExistencia = false    // Se declara una variable para controlar la exixtencia
-	if (productoEncontrado) { // Si existe el producto se procede a validar la existencia
-		// Se envía a la función 'comprobarExistencia' la cantidad ingresada y la existencia actual de ese producto
-		if (comprobarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
+	var superaExistencia = false    // Para controlar la exixtencia
+	if (productoEncontrado) {
+		/*if (comprobarExistencia(cantidad.value, existenciaProductoActual)) {    // Si cantidad es mayor a existencia
 			swal( { type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
 					`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
 					confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true } )
-		} else {    // Si el producto está disponible en existencia
-			var cont = 0
-			if (cantidad.value == "" || cantidad.value == 0) {    // Si no se ingresa cantidad por defecto será 1
-				cantidadFinal = 1
-			} else {
-				cantidadFinal = cantidad.value    // Cantidad final será el valor ingresado pero se procede a comprobar si el producto ya se escogio	
+		} else {*/
+			var cont = 0, codigoAComparar = 0, 
+			cantidadFinal = cantidad.value
+			if (cantidad.value == "" || cantidad.value == 0) {
+				cantidadFinal = 1 // por defecto 1
 			}
-			for (var data in datos.productos) {    // Recorre todos los codigos de productos para comprobar si se repite
-				var aComparar = datos.productos[data].codigo    // aComparar representa cada código del producto en la lista
-				cont += 1    // incremento del contador
-				if (codigo.value == aComparar) {    // Si el código ingresado ya existe en la lista de productos
-					if (tipoInsercion == 'Agregar') {    // Si va a agregar y ya existe se suma la cantidad a la anterior
+			
+			for (var data in datos.productos) {    // Comprobar si se repite
+				var codigoAComparar = datos.productos[data].codigo
+				cont += 1
+				if (codigo.value == codigoAComparar) {    // Si ya existe
+					if (tipoInsercion == 'Agregar') {
 						cantidadFinal = parseInt(cantidadFinal) + parseInt(datos.productos[data].cantidad)
-					} else if (tipoInsercion == 'Modificar') {    // Si se va a modificar uno que ya existe
+					} else if (tipoInsercion == 'Modificar') {
 						cantidadFinal = cantidad.value
 						document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto"
-						botonBuscarProducto.disabled = false
-						codigo.disabled = false
+						botonBuscarProducto.disabled = false, codigo.disabled = false
 					}
-					if (!superaExistencia) {   // Para borrar los items repetidos y evitar redundancia
+					//if (!superaExistencia) {   // Para borrar los items repetidos y evitar redundancia
 						datos.productos.splice(cont - 1, 1)    // a partir de la posición del item actual (cont -1) borrar 1 elemento
 						tipoInsercion = 'Agregar'
-					}
+					//}
 				}
 			}
-			if (!superaExistencia) {    // Si el producto se encontró y su cantidad no supera la existencia
-				price = (precio.value).replace(",", ".")    // Cambio de coma a punto
-				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // Cáculo de total a pagar redondeo a dos decimales
-				var totalpagar2 = String(totalpagar1).replace(".", ",")    // Volver a cambiar por la coma
-				id = "prod_" + Math.floor(Math.random() * 10000)    // Identificador aleatorio para el item de la lista
+			console.log(codigoAComparar)
+			//if (!superaExistencia) {    // Si se encontró y su cantidad no supera la existencia
+				price = (precio.value).replace(",", ".")
+				totalpagar1 = parseFloat(parseFloat(price) * parseInt(cantidadFinal)).toFixed(2) // Redondeo 2 decimales
+				var totalpagar2 = String(totalpagar1).replace(".", ",")
+				id = "prod_" + Math.floor(Math.random() * 10000)
 				datos.productos.push( { id: id, codigo: codigo.value, descripcion: descripcion.value, precio: precio.value,
 					  cantidad: cantidadFinal, totalAPagar: totalpagar2, existencia: existenciaProductoActual })
-				actualizarTabla();    // Una vez insertados actualiza la tabla
-				productoEncontrado = false    // Disponible para buscar otro producto
-				limpiarCamposProd();    // Se limpian los campos del producto una vez agregado a la lista
-			}
-		}
+				limpiarCamposProd(), actualizarTabla()
+				productoEncontrado = false
+			//}
+		//}
 	} else {
 		swal( { type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false, 
 				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true })
 	}
 }
 
-//----------------------------------Modificar Producto----------------------------------------------
-// Esta función se ejecuta al presionar los botones de modificar de cada item de la tabla
 function modificarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 	var cont = 0
 	codigo.disabled = true
@@ -119,25 +114,22 @@ function eliminarProducto(identificador) {// identificador 1, 2, 3, 4, etc
 }
 ///////////////////////////// Actualizar tabla de productos //////////////////////////////////////
 function actualizarTabla() {
-	contadorProductos = 0
-	total = 0, calculoIVA = 0//Puede cambiar valor de IVA de 12
-	var descuento = 5
+	contadorProductos = 0, subtotal = 0, calculoIVA = 0, descuento = 5, total = 0,
+	numeroProd = 0    // Numero que aparece en la primera columna de la tabla
 	tablaGernerada = ''
-	subtotal = 0
-	numeroProd = 0
-	for (var data in datos.productos) {
-		numeroProd += (parseInt(data) + 1)
+	for (var data in datos.productos) {    // Recorrido a los items de la lista
+		numeroProd += (parseInt(data) + 1)    // Generación del número del producto
 		tablaGernerada += '<tr><td>' + (parseInt(data) + 1) + '</td><td>' + datos.productos[data].codigo + '</td><td>' + datos.productos[data].descripcion + '</td>'
 		tablaGernerada += '<td>$ ' + datos.productos[data].precio + '</td><td>' + datos.productos[data].cantidad + '</td>'
 		tablaGernerada += '<td>$ ' + datos.productos[data].totalAPagar + '</td>'
 		tablaGernerada += '<td><button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + data + '" onClick="modificarProducto(' + (parseInt(data) + 1) + ')"><i style="color:#3F9735"class="zmdi zmdi-edit"></i></button>    '
 		tablaGernerada += '<button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + data + '" onClick="eliminarProducto(' + (parseInt(data) + 1) + ')"><i style="color:#B71C1C"class="zmdi zmdi-close-circle"></i></button></td></tr>'
-		totalObtenido = String(datos.productos[data].totalAPagar).replace(",", ".")
+		totalObtenido = String(datos.productos[data].totalAPagar).replace(",", ".")    // Obtengo el total a pagar
 		contadorProductos++
-		subtotal += parseFloat(totalObtenido)
+		subtotal += parseFloat(totalObtenido)    // Genero el subtotal sumando los totales de los productos
 	}
-	calculoIVA = (subtotal * IVA) / 100
-	if (!hayDescuento) {
+	calculoIVA = (subtotal * IVA) / 100    // Cálculo del IVA
+	if (!hayDescuento) {    // Se comprueba si hay descuento o no
 		calculoDesc = 0
 	} else {
 		calculoDesc = (subtotal * descuento) / 100
