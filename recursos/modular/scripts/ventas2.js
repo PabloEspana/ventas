@@ -1,4 +1,4 @@
-// 341 de 453
+// 352 de 453
 var cedula = document.getElementById('cedula');
 var cliente = document.getElementById('cliente');
 var descripcion = document.getElementById('descripcion');
@@ -6,29 +6,17 @@ var codigo = document.getElementById('codigo');
 var cantidad = document.getElementById('cantidad');
 var precio = document.getElementById('precio');
 var subtotal = 0, ultimototal = 0, suma = 0, existenciaProductoActual = 0
-var contadorProductos = 0
 var estadoBoton1 = "buscar", estadoBoton2 = "buscar"
 var numeroProd = 0,
 	IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
 totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nuevaCantidad = 0, cantidadFinal = 0,
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
-window.onload = () => { // Evento de carga
-	date = new Date()
-	labelFecha = document.getElementById('fecha')
-	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear()
-	labelFecha.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}`
-}
-
 botonBuscarProducto = document.getElementById('btnBuscarProducto')
-botonBuscarProducto.addEventListener('click', buscarProducto)
 botonBuscarCliente = document.getElementById('btnBuscarCliente')
-botonBuscarCliente.addEventListener('click', buscarCliente)
 botonAgregarProducto = document.getElementById('btn-agregar')
-botonAgregarProducto.addEventListener('click', agregarProducto)
-
-listado = { productos: [] }
 enviarContenido = document.getElementById('tablaProductos')
+listado = { productos: [] }
 
 function agregarProducto() {
 	var cantidadActual = 0, existeEnLista = false
@@ -82,12 +70,10 @@ function agregarProducto() {
 }
 
 function modificarProducto(identificador) {
-	var cont = 0
 	codigo.disabled = true
 	for (var item in listado.productos) {
 		var aComparar = listado.productos[item].codigo
-		cont += 1
-		if (identificador == cont) {
+		if (identificador == parseInt(item) + 1) {
 			codigo.value = listado.productos[item].codigo
 			descripcion.value = listado.productos[item].descripcion
 			precio.value = listado.productos[item].precio
@@ -113,40 +99,58 @@ function eliminarProducto(identificador) {
 		}
 	});
 }
+
 function actualizarTabla() {
-	contadorProductos = 0, subtotal = 0, calculoIVA = 0, descuento = 5, total = 0,
+	subtotal = 0, calculoIVA = 0, descuento = 5, total = 0,
 		numeroProd = 0    // Numero que aparece en la primera columna de la tabla
 	tablaGernerada = ''
 	for (var item in listado.productos) {
 		numeroProd += (parseInt(item) + 1)
-		tablaGernerada += '<tr><td>' + (parseInt(item) + 1) + '</td><td>' + listado.productos[item].codigo + '</td><td>' + listado.productos[item].descripcion + '</td>'
-		tablaGernerada += '<td>$ ' + listado.productos[item].precio + '</td><td>' + listado.productos[item].cantidad + '</td>'
-		tablaGernerada += '<td>$ ' + listado.productos[item].totalAPagar + '</td>'
-		tablaGernerada += '<td><button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + item + '" onClick="modificarProducto(' + (parseInt(item) + 1) + ')"><i style="color:#3F9735"class="zmdi zmdi-edit"></i></button>    '
-		tablaGernerada += '<button validation="deleteEmpleado" event="click" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" id="p' + item + '" onClick="eliminarProducto(' + (parseInt(item) + 1) + ')"><i style="color:#B71C1C"class="zmdi zmdi-close-circle"></i></button></td></tr>'
+		tablaGernerada +=  // Sección de items
+			`<tr>
+				<td>${(parseInt(item) + 1)}</td>
+				<td>${listado.productos[item].codigo}</td>
+				<td>${listado.productos[item].descripcion}</td>
+				<td>$ ${listado.productos[item].precio}</td>
+				<td>${listado.productos[item].cantidad}</td>
+				<td>$ ${listado.productos[item].totalAPagar}</td>
+				<td class='noSeImprime' style="display:block;>
+					<button class="mdl-button mdl-button--icon" id="p${item}" onClick="modificarProducto(${(parseInt(item) + 1)})">
+						<i style="color:#3F9735"class="zmdi zmdi-edit"></i>
+					</button>
+					<button class="mdl-button mdl-button--icon" id="p${item}" onClick="eliminarProducto(${(parseInt(item) + 1)})">
+						<i style="color:#B71C1C"class="zmdi zmdi-close-circle"></i>
+					</button>
+				</td>
+			</tr>`
 		totalObtenido = String(listado.productos[item].totalAPagar).replace(",", ".")    // Obtengo el total a pagar
-		contadorProductos++
 		subtotal += parseFloat(totalObtenido)    // Genero el subtotal sumando los totales de los productos
 	}
 	calculoIVA = (subtotal * IVA) / 100
 	if (!hayDescuento) {
-		calculoDesc = 0
+		calculoDesc = (subtotal * descuento) / 100
 	} else {
 		calculoDesc = (subtotal * descuento) / 100
 	}
 	total = subtotal + calculoIVA - calculoDesc
-
 	var subtotal2 = String(subtotal.toFixed(2)).replace(".", ","), calculoIVA2 = String(calculoIVA.toFixed(2)).replace(".", ","),
 		calculoDesc2 = String(calculoDesc.toFixed(2)).replace(".", ","), total2 = String(total.toFixed(2)).replace(".", ",")
-
-	tablaGernerada += '<tr><td></td><td></td><td></td><td></td>'
-	tablaGernerada += '<td><b><h6>Subtotal : </h6></b><b><h6>IVA : </h6></b><b><h6>Descuento : </h6></b>'
-	tablaGernerada += '<b><h6>Total : </h6></b>'
-	tablaGernerada += '<td><b><h6>$ ' + subtotal2 + '</h6></b><b><h6>$ ' + calculoIVA2 + '</h6></b><b><h6>$ ' + calculoDesc2 + '</h6></b>'
-	tablaGernerada += '<b><h6>$ ' + total2 + '</h6></b>'
-	tablaGernerada += '<td><center><button id="btn-imprimir" onclick="printDiv()" title="Imprimir Factura"'
-		+ 'class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;"'
-		+ 'ocultarID="divTabla" mostrarID="tabNewAdmin">IMPRIMIR FACTURA</button></center></td></td></tr>'
+	tablaGernerada += // Sección de totales
+		`<tr>
+			<td><td><td><td>
+			<td>
+				<b><h6>Subtotal : </h6></b>
+				<b><h6>IVA : </h6></b>
+				<b><h6>Descuento : </h6></b>
+				<b><h6>Total : </h6></b>
+			<td>
+				<b><h6>$ ${subtotal2}</h6></b>
+				<b><h6>$ ${calculoIVA2}</h6></b>
+				<b><h6>$ ${calculoDesc2}</h6></b>
+				<b><h6>$ ${total2}</h6></b>
+			<td class='noSeImprime' style="display:block;>
+				<a id="btn-imprimir" onclick="guardarVenta()" class="mdl-button" style="color: #3F51B5;">IMPRIMIR FACTURA</a>
+		</tr>`
 	enviarContenido.innerHTML = tablaGernerada
 	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
 }
@@ -244,20 +248,17 @@ function limpiarCamposProd() {
 	productoEncontrado = false
 }
 
-function printDiv() {  // Hay que mejorar este metodo y el siguiente
-	var mensaje = ""
-	var faltanDatos = true
+function guardarVenta() {  // Hay que mejorar este metodo y el siguiente
+	var mensaje = "", faltanDatos = true
 	if (numeroProd == 0) {
 		mensaje += " Debe agregar al menos 1 producto para realizar la venta. "
 		faltanDatos = false
-	} if (document.getElementById("cedula").value.trim() == "" || document.getElementById("cliente").value.trim() == "") {
+	} if (cedula.value.trim() == "" || cliente.value.trim() == "") {
 		mensaje += "No hay cliente seleccionado. "
 		faltanDatos = false
 	}
 	if (!faltanDatos) {
-		swal({
-			type: "error", title: 'Datos requeridos', text: mensaje, confirmButtonText: 'Ok', closeOnConfirm: true
-		})
+		swal({ type: "error", title: 'Datos requeridos', text: mensaje, confirmButtonText: 'Ok', closeOnConfirm: true })
 		mensaje = ""
 	} else {
 		swal({
@@ -265,7 +266,7 @@ function printDiv() {  // Hay que mejorar este metodo y el siguiente
 			confirmButtonText: 'Si, Guardar e Imprimir', cancelButtonText: 'Cancelar', closeOnConfirm: true
 		}, function (isConfirm) {
 			if (isConfirm) {
-				tablaImprimir()
+				generarImpresion()
 				var idlistado = Math.floor(Math.random() * 100000000)
 				datos = {
 					"Ced_Vent": cedula.value, "NomCli_Vent": cliente.value, "CodPro_Vent": { idlistado: idlistado, productos: listado.productos },
@@ -275,13 +276,9 @@ function printDiv() {  // Hay que mejorar este metodo y el siguiente
 					type: "POST", url: "/admin/ventas/", dataType: "text", contentType: "application/json", data: JSON.stringify(datos)
 				}).done(function (msg) {
 					swal({
-						type: "success",
-						title: 'Información',
-						text: msg,
-						confirmButtonText: 'Ok',
-						closeOnConfirm: true
+						type: "success", title: 'Información', text: msg, confirmButtonText: 'Ok', closeOnConfirm: true
 					}, () => {
-						var date = new Date();
+						/*var date = new Date();
 						var dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear();//Obtener día, mes y año
 						var fecha = dia + "/" + mes + "/" + anio;
 						var valor = 0
@@ -289,6 +286,7 @@ function printDiv() {  // Hay que mejorar este metodo y el siguiente
 						document.getElementById('NavPrincipal').style.display = "none"
 						$('#todo').removeClass("full-width");
 						$('#todo').removeClass("pageContent");
+
 						document.getElementById("vista").style.display = "none"
 						document.getElementById("paraImprimir").style.display = "block"
 						document.getElementById('titulo').innerHTML = "Car de Lujo"
@@ -300,7 +298,7 @@ function printDiv() {  // Hay que mejorar este metodo y el siguiente
 						} else {
 							valor = 0
 						}
-						document.getElementById('descuentoimp').innerHTML = "Descuento: " + valor + "%"
+						document.getElementById('descuentoimp').innerHTML = "Descuento: " + valor + "%"*/
 						setTimeout(() => { window.print(); window.location = 'ventas'; }, 200)
 					})
 				});
@@ -309,8 +307,14 @@ function printDiv() {  // Hay que mejorar este metodo y el siguiente
 	}
 }
 
-function tablaImprimir() {
-	total = 0, calculoIVA = 0
+function generarImpresion() {
+	document.getElementById('menuVertical').style.display = "none"
+	document.getElementById('menuHorizontal').style.display = "none"
+	$('#vistaVentas').removeClass("full-width pageContent");
+	document.getElementById("contenidoVistaVentas").style.display = "none"
+	document.getElementById("contenidoImprimir").style.display = "block"
+	document.querySelector('.noSeImprime').style.display = "none"
+	/*total = 0, calculoIVA = 0
 	var descuento = 5
 	tablaGernerada = ''
 	subtotal = 0
@@ -338,5 +342,5 @@ function tablaImprimir() {
 	tablaGernerada += '<td><b><h6>$ ' + subtotal2 + '</h6></b><b><h6>$ ' + calculoIVA2 + '</h6></b><b><h6>$ ' + calculoDesc2 + '</h6></b>'
 	tablaGernerada += '<b><h6>$ ' + total2 + '</h6></b></td>'
 	tablaGernerada += '</tr>'
-	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada
+	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada*/
 }

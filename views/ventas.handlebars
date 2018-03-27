@@ -1,5 +1,5 @@
-<section class="full-width pageContent" id="todo" style="display:block;">
-	<div id="vista" style="display:block;">
+<section class="full-width pageContent" id="vistaVentas" style="display:block;">
+	<div id="contenidoVistaVentas" style="display:block;">
 		<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
 			<div class="mdl-tabs__panel is-active" id="tabNewAdmin">
 				<div class="mdl-grid">
@@ -30,7 +30,7 @@
 										<span class="mdl-textfield__error">Cédula inválida</span>
 									</div>
 									<div style="width:13%;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-										<button id="btnBuscarCliente" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;">Buscar</button>
+										<button id="btnBuscarCliente" onclick="buscarCliente()" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;">Buscar</button>
 									</div>
 									<div style="width:67%;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<label class="text-condensedLight" style="font-size:17px;">Nombre del Cliente</label>
@@ -46,7 +46,7 @@
 										<span class="mdl-textfield__error">Cédula inválida</span>
 									</div>
 									<div style="width:13%;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-										<button id="btnBuscarProducto" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;">Buscar</button>
+										<button id="btnBuscarProducto" onclick="buscarProducto()" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F51B5;">Buscar</button>
 									</div>
 									<div style="width:33%;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<label class="text-condensedLight" style="font-size:17px;">Descripcion</label>
@@ -68,7 +68,7 @@
 									</div>
 								</div>
 								<center>
-									<button id="btn-agregar" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F9735; width:300px; height:60px;"><i style="color: #3F9735;" class="zmdi zmdi-shopping-cart"></i> <b id="guardar-actualizar"> Agregar Producto</b></button>
+									<button id="btn-agregar" onclick="agregarProducto()" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="color: #3F9735; width:300px; height:60px;"><i style="color: #3F9735;" class="zmdi zmdi-shopping-cart"></i> <b id="guardar-actualizar"> Agregar Producto</b></button>
 								</center>
 								</form>
 							</div>
@@ -101,7 +101,7 @@
 		</div>
 		<br><br>
 	</div>
-	<div id="paraImprimir" style="display:none;">
+	<div id="contenidoImprimir" style="display:none;">
 		<img src="../modular/azul.png" width="100%" height="50px" alt=""><br>
 		<br><br>
 
@@ -110,9 +110,10 @@
 			<h2 id="titulo" style="display:none;"></h2>
 			<h3 id="subtitulo">Factura N° {{factura}}</h3>
 			<div>
-				<label>Fecha de Venta: </label>
-				<label id="fechaimp"></label><br><br>
+				<label onload="obtenerFecha()" class="text-condensedLight" style="font-size:17px;" id="fechaImp"></label><br>
+				<br><br>
 			</div>
+			
 		</center>
 		<div>
 			<label id="cedulaimp"></label><br>
@@ -148,3 +149,13 @@
 
 
 <script src="../modular/scripts/ventas2.js"></script>
+<script>
+window.onload = () => { // Evento de carga
+	date = new Date()
+	labelFecha = document.getElementById('fecha')
+	labelFechaImp = document.getElementById('fechaImp')
+	dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear()
+	labelFecha.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}`
+	labelFechaImp.innerHTML = `Fecha de la Venta: ${dia}/${mes}/${anio}`
+}	
+</script>	
