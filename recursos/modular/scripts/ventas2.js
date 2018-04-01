@@ -1,14 +1,15 @@
-// 352 de 453
-var cedula = document.getElementById('cedula');
-var cliente = document.getElementById('cliente');
+// 264 de 453
+var cedula = document.getElementById('cedula'),
+	cliente = document.getElementById('cliente'),
+	numeroProductos = 0, existenciaProductoActual = 0;
+
 var descripcion = document.getElementById('descripcion');
 var codigo = document.getElementById('codigo');
 var cantidad = document.getElementById('cantidad');
 var precio = document.getElementById('precio');
-var subtotal = 0, ultimototal = 0, suma = 0, existenciaProductoActual = 0
-var estadoBoton1 = "buscar", estadoBoton2 = "buscar"
-var numeroProd = 0,
-	IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
+var subtotal = 0;
+
+IVA = 12;  //IVA = document.getElementById('iva').value || 12; (esto debe cambiar)
 totalObtenido = 0, calculoDesc = 0, hayDescuento = false, hayCliente = false, nuevaCantidad = 0, cantidadFinal = 0,
 	tipoInsercion = 'Agregar', productoEncontrado = false, clienteEncontrado = false
 
@@ -40,17 +41,14 @@ function agregarProducto() {
 			cantidadFinal = parseInt(Cantidad)
 		}
 		if (superaExixtencia(cantidadFinal, existenciaProductoActual)) {
-			swal({  // Mensaje
-				type: 'error', title: 'Incorrecto', text: `Cantidad ingresada es mayor a existencia del producto.` +
-				`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, showCancelButton: false,
-				confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true
-			})
+			swal('Incorrecto', `Cantidad ingresada es mayor a existencia del producto.` +
+				`Total de ${descripcion.value} en existencia: ${existenciaProductoActual}`, 'error')
 		} else {
 			if (existeEnLista) {
 				listado.productos.splice(cont - 1, 1)  // borro el anterior para que no se repita
 			}
 			document.getElementById('guardar-actualizar').innerHTML = "Agregar Producto", tipoInsercion = 'Agregar'
-			document.getElementById('btnBuscarProducto').disabled = false
+			botonBuscarProducto.disabled = false
 			price = (precio.value).replace(",", ".")
 			totalpagar1 = parseFloat(parseFloat(price) * cantidadFinal).toFixed(2) // Redondeo 2 decimales
 			var totalpagar2 = String(totalpagar1).replace(".", ",")
@@ -62,10 +60,7 @@ function agregarProducto() {
 			productoEncontrado = false
 		}
 	} else {
-		swal({  //Mensaje
-			type: 'error', title: 'Datos incompletos', text: 'Debe buscar un producto', showCancelButton: false,
-			confirmButtonText: 'Ok', cancelButtonText: 'No', closeOnConfirm: true
-		})
+		swal('Datos incompletos','Debe buscar un producto','error')
 	}
 }
 
@@ -92,8 +87,8 @@ function eliminarProducto(identificador) {
 	swal({
 		title: 'Quitar Producto', text: '¿Desea quitar este producto?', showCancelButton: true,
 		confirmButtonText: 'Si', cancelButtonText: 'No', closeOnConfirm: true
-	}, function (isConfirm) {
-		if (isConfirm) {
+	}, function (willDelete) {
+		if (willDelete) {
 			listado.productos.splice(identificador - 1, 1)  // Borra el item
 			actualizarTabla()
 		}
@@ -102,10 +97,10 @@ function eliminarProducto(identificador) {
 
 function actualizarTabla() {
 	subtotal = 0, calculoIVA = 0, descuento = 5, total = 0,
-		numeroProd = 0    // Numero que aparece en la primera columna de la tabla
+		numeroProductos = 0    // Numero que aparece en la primera columna de la tabla
 	tablaGernerada = ''
 	for (var item in listado.productos) {
-		numeroProd += (parseInt(item) + 1)
+		numeroProductos += (parseInt(item) + 1)
 		tablaGernerada +=  // Sección de items
 			`<tr>
 				<td>${(parseInt(item) + 1)}</td>
@@ -114,7 +109,7 @@ function actualizarTabla() {
 				<td>$ ${listado.productos[item].precio}</td>
 				<td>${listado.productos[item].cantidad}</td>
 				<td>$ ${listado.productos[item].totalAPagar}</td>
-				<td class='noSeImprime' style="display:block;>
+				<td class='noSeImprime'>
 					<button class="mdl-button mdl-button--icon" id="p${item}" onClick="modificarProducto(${(parseInt(item) + 1)})">
 						<i style="color:#3F9735"class="zmdi zmdi-edit"></i>
 					</button>
@@ -128,7 +123,7 @@ function actualizarTabla() {
 	}
 	calculoIVA = (subtotal * IVA) / 100
 	if (!hayDescuento) {
-		calculoDesc = (subtotal * descuento) / 100
+		calculoDesc = 0
 	} else {
 		calculoDesc = (subtotal * descuento) / 100
 	}
@@ -137,7 +132,7 @@ function actualizarTabla() {
 		calculoDesc2 = String(calculoDesc.toFixed(2)).replace(".", ","), total2 = String(total.toFixed(2)).replace(".", ",")
 	tablaGernerada += // Sección de totales
 		`<tr>
-			<td><td><td><td>
+			<td colspan='4'>
 			<td>
 				<b><h6>Subtotal : </h6></b>
 				<b><h6>IVA : </h6></b>
@@ -148,7 +143,7 @@ function actualizarTabla() {
 				<b><h6>$ ${calculoIVA2}</h6></b>
 				<b><h6>$ ${calculoDesc2}</h6></b>
 				<b><h6>$ ${total2}</h6></b>
-			<td class='noSeImprime' style="display:block;>
+			<td class='noSeImprime'>
 				<a id="btn-imprimir" onclick="guardarVenta()" class="mdl-button" style="color: #3F51B5;">IMPRIMIR FACTURA</a>
 		</tr>`
 	enviarContenido.innerHTML = tablaGernerada
@@ -156,22 +151,16 @@ function actualizarTabla() {
 }
 
 function buscarCliente() {
-	descuento = 0
-	var cedula = document.getElementById('cedula').value;
-	if (estadoBoton1 == "buscar") {
-		if (cedula.length > 0) {
-			$.ajax({ type: "GET", url: `/admin/buscar/${cedula}`, dataType: "json", contentType: "text/plain" }).done((datos) => {
+	if (botonBuscarCliente.value == "buscar") {
+		if (cedula.value.length > 0) {
+			$.ajax({ type: "GET", url: `/admin/buscar/${cedula.value}`, dataType: "json", contentType: "text/plain" }).done((datos) => {
 				if (datos.cliente.length) {
-					cliente.value = ""
-					swal({
-						type: "error", title: 'No se encontró', text: 'Busque un cliente que esté registrado',
-						confirmButtonText: 'Ok', closeOnConfirm: true
-					})
+					swal('No se encontró', 'Busque un cliente que esté registrado', 'error')
 					clienteEncontrado = false
+					cliente.value = ""
 				} else {
-					document.getElementById('cedula').disabled = true
+					cedula.disabled = true
 					cliente.value = datos.cliente.Nomb_Cli
-					hayCliente = true
 					tipoCliente = datos.cliente.Tip_Cli
 					clienteEncontrado = true
 					if (tipoCliente == 'Ocasional') {
@@ -179,56 +168,45 @@ function buscarCliente() {
 					} else if (tipoCliente == 'Premium') {
 						hayDescuento = true
 					}
-					document.getElementById('cedula').disabled = true
-					estadoBoton1 = "limpiar"
+					botonBuscarCliente.value = "limpiar"
 					botonBuscarCliente.innerHTML = "Nuevo"
 					actualizarTabla()
 				}
 			});
 		} else {
-			swal({
-				type: "error", title: 'Datos incompletos', text: 'Especifique la cédula del cliente',
-				confirmButtonText: 'Ok', closeOnConfirm: true
-			})
+			swal('Datos incompletos', 'Especifique la cédula del cliente', 'error')
 			clienteEncontrado = false
 		}
-	} else if (estadoBoton1 == "limpiar") {
-		document.getElementById("cedula").value = "", document.getElementById("cliente").value = ""
-		clienteEncontrado = false, document.getElementById("cedula").disabled = false
-		botonBuscarCliente.innerHTML = "Buscar", estadoBoton1 = "buscar"
+	} else if (botonBuscarCliente.value == "limpiar") {
+		cedula.value = "", cliente.value = ""
+		clienteEncontrado = false, cedula.disabled = false
+		botonBuscarCliente.innerHTML = "Buscar", botonBuscarCliente.value = "buscar"
 	}
 };
 
 function buscarProducto() {
-	var codigo = document.getElementById('codigo').value;
-	if (estadoBoton2 == "buscar") {    // Si en el botón para buscar un producto esta listo para buscar
-		if (codigo.length > 0) {
-			$.ajax({ type: "GET", url: `/admin/buscarprod/${codigo}`, dataType: "json", contentType: "text/plain" }).done((datosProd) => {
+	if (botonBuscarProducto.value == "buscar") {    // Si en el botón para buscar un producto esta listo para buscar
+		if (codigo.value.length > 0) {
+			$.ajax({ type: "GET", url: `/admin/buscarprod/${codigo.value}`, dataType: "json", contentType: "text/plain" }).done((datosProd) => {
 				if (datosProd.producto.length) {
-					descripcion.value = ""
-					swal({
-						type: "error", title: 'No se encontró', text: 'Busque un producto que este registrado',
-						confirmButtonText: 'Ok', closeOnConfirm: true
-					})
+					swal('No se encontró', 'Busque un producto que este registrado', 'error')
 					productoEncontrado = false
+					descripcion.value = ""
 				} else {
-					document.getElementById('codigo').disabled = true
-					estadoBoton2 = "limpiar"
-					botonBuscarProducto.innerHTML = "Nuevo"
+					codigo.disabled = true
 					descripcion.value = datosProd.producto.Des_Prod
 					precio.value = datosProd.producto.PrecVen_Pro
 					existenciaProductoActual = datosProd.producto.Exis_Prod
 					productoEncontrado = true
+					botonBuscarProducto.value = "limpiar"
+					botonBuscarProducto.innerHTML = "Nuevo"
 				}
 			});
 		} else {
-			swal({
-				type: "error", title: 'Datos incompletos', text: 'Especifique el código del producto',
-				confirmButtonText: 'Ok', closeOnConfirm: true
-			})
+			swal('Datos incompletos', 'Especifique el código del producto', 'error')
 			productoEncontrado = false
 		}
-	} else if (estadoBoton2 == "limpiar") {
+	} else if (botonBuscarProducto.value == "limpiar") {
 		limpiarCamposProd()
 	}
 }
@@ -242,15 +220,15 @@ function superaExixtencia(cantidad, existencia) {
 }
 
 function limpiarCamposProd() {
-	document.getElementById("codigo").disabled = false
+	codigo.disabled = false
 	codigo.value = "", descripcion.value = "", precio.value = "", cantidad.value = ""
-	botonBuscarProducto.innerHTML = "Buscar", estadoBoton2 = "buscar"
+	botonBuscarProducto.innerHTML = "Buscar", botonBuscarProducto.value = "buscar"
 	productoEncontrado = false
 }
 
 function guardarVenta() {  // Hay que mejorar este metodo y el siguiente
 	var mensaje = "", faltanDatos = true
-	if (numeroProd == 0) {
+	if (numeroProductos == 0) {
 		mensaje += " Debe agregar al menos 1 producto para realizar la venta. "
 		faltanDatos = false
 	} if (cedula.value.trim() == "" || cliente.value.trim() == "") {
@@ -266,7 +244,7 @@ function guardarVenta() {  // Hay que mejorar este metodo y el siguiente
 			confirmButtonText: 'Si, Guardar e Imprimir', cancelButtonText: 'Cancelar', closeOnConfirm: true
 		}, function (isConfirm) {
 			if (isConfirm) {
-				generarImpresion()
+				//generarImpresion()
 				var idlistado = Math.floor(Math.random() * 100000000)
 				datos = {
 					"Ced_Vent": cedula.value, "NomCli_Vent": cliente.value, "CodPro_Vent": { idlistado: idlistado, productos: listado.productos },
@@ -278,69 +256,10 @@ function guardarVenta() {  // Hay que mejorar este metodo y el siguiente
 					swal({
 						type: "success", title: 'Información', text: msg, confirmButtonText: 'Ok', closeOnConfirm: true
 					}, () => {
-						/*var date = new Date();
-						var dia = date.getDate(), mes = (date.getMonth()) + 1, anio = date.getFullYear();//Obtener día, mes y año
-						var fecha = dia + "/" + mes + "/" + anio;
-						var valor = 0
-						document.getElementById('lateralGeneral').style.display = "none"
-						document.getElementById('NavPrincipal').style.display = "none"
-						$('#todo').removeClass("full-width");
-						$('#todo').removeClass("pageContent");
-
-						document.getElementById("vista").style.display = "none"
-						document.getElementById("paraImprimir").style.display = "block"
-						document.getElementById('titulo').innerHTML = "Car de Lujo"
-						document.getElementById('fechaimp').innerHTML = fecha
-						document.getElementById('cedulaimp').innerHTML = "Cédula del Cliente: " + cedula.value
-						document.getElementById('clienteimp').innerHTML = "Nombre del Cliente: " + cliente.value
-						if (hayDescuento) {
-							valor = 5
-						} else {
-							valor = 0
-						}
-						document.getElementById('descuentoimp').innerHTML = "Descuento: " + valor + "%"*/
 						setTimeout(() => { window.print(); window.location = 'ventas'; }, 200)
 					})
 				});
 			}
 		});
 	}
-}
-
-function generarImpresion() {
-	document.getElementById('menuVertical').style.display = "none"
-	document.getElementById('menuHorizontal').style.display = "none"
-	$('#vistaVentas').removeClass("full-width pageContent");
-	document.getElementById("contenidoVistaVentas").style.display = "none"
-	document.getElementById("contenidoImprimir").style.display = "block"
-	document.querySelector('.noSeImprime').style.display = "none"
-	/*total = 0, calculoIVA = 0
-	var descuento = 5
-	tablaGernerada = ''
-	subtotal = 0
-	for (var item in listado.productos) {
-		tablaGernerada += '<tr><td>' + (parseInt(item) + 1) + '</td><td>' + listado.productos[item].codigo + '</td><td>' + listado.productos[item].descripcion + '</td>'
-		tablaGernerada += '<td>$ ' + listado.productos[item].precio + '</td><td>' + listado.productos[item].cantidad + '</td>'
-		tablaGernerada += '<td>$ ' + listado.productos[item].totalAPagar + '</td></tr>'
-		totalObtenido = String(listado.productos[item].totalAPagar).replace(",", ".")
-		subtotal += parseFloat(totalObtenido)
-	}
-	calculoIVA = (subtotal * IVA) / 100
-	if (!hayDescuento) {
-		calculoDesc = 0
-	} else {
-		calculoDesc = (subtotal * descuento) / 100
-	}
-	total = subtotal + calculoIVA - calculoDesc
-
-	var subtotal2 = String(subtotal.toFixed(2)).replace(".", ","), calculoIVA2 = String(calculoIVA.toFixed(2)).replace(".", ","),
-		calculoDesc2 = String(calculoDesc.toFixed(2)).replace(".", ","), total2 = String(total.toFixed(2)).replace(".", ",")
-
-	tablaGernerada += '<tr><td></td><td></td><td></td><td></td>'
-	tablaGernerada += '<td><b><h6>Subtotal : </h6></b><b><h6>IVA : </h6></b><b><h6>Descuento : </h6></b>'
-	tablaGernerada += '<b><h6>Total : </h6></b>'
-	tablaGernerada += '<td><b><h6>$ ' + subtotal2 + '</h6></b><b><h6>$ ' + calculoIVA2 + '</h6></b><b><h6>$ ' + calculoDesc2 + '</h6></b>'
-	tablaGernerada += '<b><h6>$ ' + total2 + '</h6></b></td>'
-	tablaGernerada += '</tr>'
-	document.getElementById('tablaProductosImp').innerHTML = tablaGernerada*/
 }
