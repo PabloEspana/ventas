@@ -54,13 +54,16 @@ router.post('/editarProducto', ensureAuthenticated, producto_controller.editProd
 router.post('/eliminarProducto', ensureAuthenticated, producto_controller.deletedProduct);
 //Obtener los valores de los input para guardarlos en el esquema o eso se supone..
 
-
+router.get('/factura', ensureAuthenticated, function(req, res){
+	res.render('factura');
+});
 
 router.get('/inventario', ensureAuthenticated, function (req, res) {
 	E_DBF_PRODUCTO_OBJ.find({}, function (err, users) {
 		res.render('inventario', { producto: users });
 	});
 });
+
 router.get('/inventariocliente', ensureAuthenticated, function (req, res) {
 	E_DBF_PRODUCTO_OBJ.find({}, function (err, users) {
 		res.render('inventario_clientes', { producto: users });

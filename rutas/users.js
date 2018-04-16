@@ -13,6 +13,7 @@ router.get('/administracion', function(req, res){
 	res.render('administracion');
 });
 
+
 // registrar usuarios
 router.post('/administracion', function(req, res){
 	//exttrae los valores de los input de la parte de administracion
