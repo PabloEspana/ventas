@@ -20,7 +20,7 @@ port = process.env.PORT || puerto;
 var archivos=null;
 
 //mongoose.connect('mongodb://Admin:abc123.....@ds127963.mlab.com:27963/prueba',{ server: { reconnectTries: Number.MAX_VALUE } });
-mongoose.connect('mongodb://127.0.0.1:27017/ventas',{ server: { reconnectTries: Number.MAX_VALUE } }); // Conexión a BD
+mongoose.connect('mongodb://pablo95:passtodb@ds235840.mlab.com:35840/ventasdb',{ server: { reconnectTries: Number.MAX_VALUE } }); // Conexión a BD
 
 //-----------------Creación de usuario administrador por defecto-------------------
 user.find({}, (err, usuarios) => {
