@@ -14,9 +14,10 @@ servidor = express();
 user = require('./modelos/user')
 
 
-var puerto=3000;
+var puerto=9000;
 var http = require('http').Server(servidor),
 port = process.env.PORT || puerto;
+
 var archivos=null;
 
 //mongoose.connect('mongodb://Admin:abc123.....@ds127963.mlab.com:27963/prueba',{ server: { reconnectTries: Number.MAX_VALUE } });
@@ -157,7 +158,7 @@ function ventanaPrincipal() {
       cargando.close()
       mainWindow.show()    
     })
-    mainWindow.loadURL('http://127.0.0.1:'+puerto+'/');
+    mainWindow.loadURL('https://cardelujo.herokuapp.com/:'+puerto+'/');
     mainWindow.on('closed', () => { mainWindow = null });
     Menu.setApplicationMenu(menu);
     mainWindow.on('close', (event) => {
