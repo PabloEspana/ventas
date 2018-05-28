@@ -115,7 +115,9 @@ servidor.use(function (err, req, res, next) {
 const { app, BrowserWindow, Menu, dialog, nativeImage } = require('electron');
 
 //Inicializamos el servidor
-http.listen(port);
+http.listen(port, function() {
+  console.log("App is running on port " + port);
+});
 
 //Definimos que la aplicación usará electron para iniciarse___________________________________________________________________________________
 
