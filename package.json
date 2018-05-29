@@ -4,8 +4,7 @@
   "description": "Sistema de Gestion de Ventas y Atencion al Cliente",
   "main": "main.js",
   "scripts": {
-    "start": "electron .  node main",
-    "build": "electron-packager . CarDeLujo"
+    "start": "node main.js"
   },
   "author": "",
   "license": "ISC",

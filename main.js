@@ -14,9 +14,9 @@ servidor = express();
 user = require('./modelos/user')
 
 
-var puerto=8000;
-var http = require('http').Server(servidor),
-port = process.env.PORT || puerto;
+var http = require('http').Server(servidor)
+var port = process.env.PORT || 8000
+
 
 var archivos=null;
 
