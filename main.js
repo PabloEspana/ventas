@@ -14,7 +14,7 @@ servidor = express();
 user = require('./modelos/user')
 
 
-var puerto=9000;
+var puerto=8000;
 var http = require('http').Server(servidor),
 port = process.env.PORT || puerto;
 
@@ -112,7 +112,7 @@ servidor.use(function (err, req, res, next) {
 });
 
 //Usa el api de electron____________________________________________________________________________________________________________________
-const { app, BrowserWindow, Menu, dialog, nativeImage } = require('electron');
+// electron:  const { app, BrowserWindow, Menu, dialog, nativeImage } = require('electron');
 
 //Inicializamos el servidor
 http.listen(port, function() {
@@ -122,22 +122,22 @@ http.listen(port, function() {
 //Definimos que la aplicación usará electron para iniciarse___________________________________________________________________________________
 
 
-let mainWindow,
-  icono = nativeImage.createFromPath(path.join(__dirname, 'recursos/general/imagenes/icono.png'));
+// electron:  let mainWindow,
+// electron:    icono = nativeImage.createFromPath(path.join(__dirname, 'recursos/general/imagenes/icono.png'));
 
 //Se define el menu principal independiente del HTML________________________________________________________________________________________
-var menu = Menu.buildFromTemplate(
+/*electron:  var menu = Menu.buildFromTemplate(
   [
     
   ]
-)
+)*/
 
 //Crea la ventana principal________________________________________________________________________________________________
 //Crea la ventana principal asignándole los valores necesarios
 //Cargamos la información procedente de nuestro html, js y css
 //Cuando se cierra reseteamos la ventana
 //Asignamos el menú personalizado
-var aCerrar = true;
+/*electron:   var aCerrar = true;
 function ventanaPrincipal() {
   mainWindow = new BrowserWindow({
     width: 1000, 
@@ -191,5 +191,5 @@ app.on('ready', ventanaPrincipal); // Se inicia la aplicación
 app.on('activate', () => { if (mainWindow === null) { ventanaPrincipal() } }); // Se activa la aplicación
 app.on('window-all-closed', function (event) {
   event.preventDefault();
-})
+})*/
 
