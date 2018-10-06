@@ -1,3 +1,5 @@
+// Esta modificación es de la nueva versión
+
 var productos = require('../modelos/productos');
 multer = require('multer');
 codigoBarra = ''
