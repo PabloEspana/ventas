@@ -1,0 +1,68 @@
+<section class="pageContent" style="text-align:center">  
+    <div id="contenidoImprimir">
+
+        <br>
+        
+        {{#if codigo}}
+        <h3 id="titulo">Producto "{{nombre}}"  </h3>
+       
+        <div id="codigos">
+
+        </div>
+
+        {{else}}
+        <h1>Error al generar código de barras</h1>
+        {{/if}}
+    
+    </div>
+
+     <input type="button" value="Imprimir" onclick="imprimirElemento()" 
+        class="mdl-button mdl-js-button mdl-js-ripple-effect" 
+        style="color: #3F51B5;">
+
+        <br><br><br><br>
+
+</section>
+
+<script src="../modular/scripts/JsBarcode.all.min.js"></script>
+<script>
+
+    let seccion_codigos = document.getElementById('codigos')
+    let barcodes = ''
+    
+    // genero las secciones de ódigo de barras
+    for (let i = 1; i < 25; i++) { 
+        barcodes += `<svg id="barcode${i}"></svg>`
+    }
+    seccion_codigos.innerHTML = barcodes
+
+    // generación de código de barras con ayuda de librería JsBarcode
+    for (let i = 1; i < 25; i++) { 
+        JsBarcode(`#barcode${i}`, {{codigo}}, {
+            width: 1.8,
+            height: 80,
+            fontSize: 15
+        })
+    }
+
+    // Función para realizar impresones personalizadas
+    function imprimirElemento(){
+        let contenido= document.getElementById('contenidoImprimir').innerHTML
+        let estilos = `body {
+            text-align:center
+          }`
+        let scripts = ``
+        var ventana = window.open('', 'PRINT', 'height=400,width=600')
+        ventana.document.write(`<html><head><title> ${document.title} </title>`)
+        ventana.document.write(`<style>${estilos}</style>`)
+        ventana.document.write('</head><body>')
+        ventana.document.write(contenido)
+        ventana.document.write('</body></html>')
+        ventana.document.close()
+        ventana.focus()
+        ventana.print()
+        ventana.close()
+        return true
+    }
+
+</script>
