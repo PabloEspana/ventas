@@ -290,12 +290,14 @@ function infoProductos (e,button) {
     '<br>'+
     '<label class="text-condensedLight" style="float:left;font-size:20px;">Precio de Venta</label>'+
     '<input class="mdl-textfield__input" type="text" value="'+datos[4].innerHTML+'" readonly>'+
-    '<br>'
+    '<br>'+
+    `<a id="btn-imprimir" href="verCodigoBarras?codigo=${datos[0].innerHTML}&nombre=${nombre=datos[1].innerHTML}" 
+    class="mdl-button" style="color: #3F51B5;">IMPRIMIR CÓDIGO DE BARRAS</a>`
     swal({
       title: 'Información del Producto',
       html: textHTML,
       width: "570px",
-      confirmButtonText: 'Ok',
+      confirmButtonText: 'Salir',
       closeOnConfirm: true
     });
 } 

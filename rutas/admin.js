@@ -52,6 +52,9 @@ router.get('/productos', ensureAuthenticated, function (req, res) {
 router.post('/crearProducto', ensureAuthenticated, producto_controller.crearProduct);
 router.post('/editarProducto', ensureAuthenticated, producto_controller.editProduct);
 router.post('/eliminarProducto', ensureAuthenticated, producto_controller.deletedProduct);
+router.get('/codigoBarras', ensureAuthenticated, producto_controller.generarCodigoBarra);
+router.get('/verCodigoBarras', ensureAuthenticated, producto_controller.verCodigoBarra);
+
 //Obtener los valores de los input para guardarlos en el esquema o eso se supone..
 
 router.get('/factura', ensureAuthenticated, function(req, res){

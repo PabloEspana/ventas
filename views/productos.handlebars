@@ -85,6 +85,11 @@
     <script type="text/javascript">
 	    input = document.getElementById("inputsucces").value || "Accion realizada con éxito"
 	    msgModal(input,'success',null);
+		swal({
+			type: "success", title: 'Información', text: input, confirmButtonText: 'Ok', closeOnConfirm: true
+		}, () => {
+			setTimeout(() => { window.location = 'codigoBarras' }, 200)
+		})
     </script>
 {{else if  error_msg }}
 	<input id="inputError" type="hidden" value="{{error_msg}}">
@@ -93,6 +98,8 @@
 	    msgModal(input,'error',"retroceder");
     </script>
 {{/if}}
+
+
 <script type="text/javascript">
     var titulo = document.getElementById("title_static");
     if (titulo) {
