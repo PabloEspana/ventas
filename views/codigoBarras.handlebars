@@ -25,7 +25,10 @@
 </section>
 
 <script src="../modular/scripts/JsBarcode.all.min.js"></script>
+<script src="../modular/scripts/imprimirCodigos.js"></script>
+
 <script>
+    
     let seccion_codigos = document.getElementById('codigos')
     let barcodes = ''
     
@@ -34,6 +37,7 @@
         barcodes += `<svg id="barcode${i}"></svg>`
     }
     seccion_codigos.innerHTML = barcodes
+
     // generación de código de barras con ayuda de librería JsBarcode
     for (let i = 1; i < 25; i++) { 
         JsBarcode(`#barcode${i}`, {{codigo}}, {
@@ -42,23 +46,5 @@
             fontSize: 15
         })
     }
-    // Función para realizar impresones personalizadas
-    function imprimirElemento(){
-        let contenido= document.getElementById('contenidoImprimir').innerHTML
-        let estilos = `body {
-            text-align:center
-          }`
-        let scripts = ``
-        var ventana = window.open('', 'PRINT', 'height=400,width=600')
-        ventana.document.write(`<html><head><title> ${document.title} </title>`)
-        ventana.document.write(`<style>${estilos}</style>`)
-        ventana.document.write('</head><body>')
-        ventana.document.write(contenido)
-        ventana.document.write('</body></html>')
-        ventana.document.close()
-        ventana.focus()
-        ventana.print()
-        ventana.close()
-        return true
-    }
+    
 </script>
