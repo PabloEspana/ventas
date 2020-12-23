@@ -20,8 +20,8 @@ var port = process.env.PORT || 8000
 
 var archivos=null;
 
-//mongoose.connect('mongodb://Admin:abc123.....@ds127963.mlab.com:27963/prueba',{ server: { reconnectTries: Number.MAX_VALUE } });
-mongoose.connect('mongodb://pablo95:passtodb@ds235840.mlab.com:35840/ventasdb',{ server: { reconnectTries: Number.MAX_VALUE } }); // Conexión a BD
+
+mongoose.connect("mongodb+srv://Administrador:B55k2yTswp5PbXrJ@cluster0.nwug2.mongodb.net/ventas?retryWrites=true&w=majority",{ server: { reconnectTries: Number.MAX_VALUE } }); // Conexión a BD
 
 //-----------------Creación de usuario administrador por defecto-------------------
 user.find({}, (err, usuarios) => {
